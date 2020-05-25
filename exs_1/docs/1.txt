@@ -1,0 +1,19 @@
+File::path
+- take a path as an argument (String or Pathname object)
+- returns string of the input path (?)
+
+File#path
+- takes no argument
+- returns string version of the path used to initialize File
+- may not be the current path of File
+
+
+differences:
+- one is a class method (::path), one is an instance method (#path)
+- therefore only the latter relates to a specific File instance
+- the other just helps interpret Pathname objects I suppose?
+- differ in the number of input parameters
+- differ in the relation of their output to a File instance, but not the format
+
+
+ps: find this on the File object page

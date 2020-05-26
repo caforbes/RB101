@@ -1,0 +1,6 @@
+Documentation for YAML module -- an alias for Psych
+YAML::load_file docs are found at Psych::load_file
+
+
+load_file(filename, fallback: false)click to toggle source
+Load the document contained in filename. Returns the yaml contained in filename as a Ruby object, or if the file is empty, it returns the specified fallback return value, which defaults to false.

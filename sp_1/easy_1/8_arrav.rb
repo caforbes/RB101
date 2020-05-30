@@ -1,5 +1,5 @@
 def average(num_list)
-	num_list.reduce(:+) / num_list.length
+  num_list.reduce(:+) / num_list.length
 end
 
 
@@ -28,7 +28,7 @@ puts average([9, 47, 23, 95, 16, 52]) == 40
 
 
 def faverage(num_list)
-	num_list.reduce(:+).to_f / num_list.length
+  num_list.reduce(:+).to_f / num_list.length
 end
 
 puts faverage([1, 2])

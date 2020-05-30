@@ -1,7 +1,7 @@
 def sum(number)
-	nums = number.to_s.chars.map { |s| s.to_i }
-													#map(&:to_i)
-	nums.reduce(:+)
+  nums = number.to_s.chars.map { |s| s.to_i }
+                          #map(&:to_i)
+  nums.reduce(:+)
 end
 
 # input: positive integer

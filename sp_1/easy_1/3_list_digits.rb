@@ -1,6 +1,6 @@
 def digit_list(int)
-	digits = int.to_s.chars
-	digits.map(&:to_i)
+  digits = int.to_s.chars
+  digits.map(&:to_i)
 end
 
 

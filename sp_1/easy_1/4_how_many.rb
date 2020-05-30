@@ -1,8 +1,8 @@
 def count_occurrences(arr)
-	counts = Hash.new(0)
-	arr.each { |item| counts[item] += 1 }
-	# arr.each { |item| counts[item.lowercase] += 1 }  # for case-insensitive
-	counts.each { |key,count| puts "#{key} => #{count}" }
+  counts = Hash.new(0)
+  arr.each { |item| counts[item] += 1 }
+  # arr.each { |item| counts[item.lowercase] += 1 }  # for case-insensitive
+  counts.each { |key,count| puts "#{key} => #{count}" }
 end
 
 vehicles = [
@@ -32,9 +32,9 @@ count_occurrences(vehicles)
 
 
 # perform counts
-	# create hash with default value 0
-	# for each in array, convert to symbol and look up in hash
-	# increment its value by one
+  # create hash with default value 0
+  # for each in array, convert to symbol and look up in hash
+  # increment its value by one
 # print hash neatly
-	# for each in hash, print key and value
+  # for each in hash, print key and value
 # end method

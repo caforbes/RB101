@@ -1,6 +1,6 @@
 def is_odd?(int)
-	int % 2 != 0
-	# int.remainder(2) != 0
+  int % 2 != 0
+  # int.remainder(2) != 0
 end
 
 # input: integer (pos,neg,0)

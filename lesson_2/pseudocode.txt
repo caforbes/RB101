@@ -1,0 +1,70 @@
+a method that returns the sum of two integers
+
+get two integers and save each of them
+verify they are integers??
+add the two values together
+print/return the sum
+
+START
+
+	SET val_1 = first integer
+	SET val_2 = second integer
+
+	IF val_1 not an integer, reset it to integer
+	IF val_2 not an integer, reset it to integer
+
+	SET result = val_1 + val_2
+	PRINT result
+
+END
+
+
+
+a method that takes an array of strings, and returns a string that is all those strings concatenated together
+
+given an array of strings
+take the first string and save it somewhere
+move to the second string and concatenate it to that value
+for each iteration, continue concatenating
+return the saved value
+
+START
+	
+	SET list = array of strings
+
+	SET result = blank string
+
+	WHILE iterator < length of list
+		SET result = prior result + current iteration element
+		move to next iteration
+		iterator + 1
+
+	PRINT result
+
+END
+
+
+
+a method that takes an array of integers, and returns a new array with every other element
+
+given an array of integers
+create a new array
+look at the first element of the list and add it to the array
+move two iterations forward in the list
+if that is not past the end of the list (there is an element), add it to the list
+return the new array
+
+START
+	
+	SET original = array of integers
+	SET result = empty array
+
+	SET counter = 0
+	WHILE counter < length of original
+		get element at index counter of original array
+		add it to result
+		counter = counter + 2
+
+	PRINT result
+
+END

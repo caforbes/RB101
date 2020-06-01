@@ -19,7 +19,6 @@ def operation_to_lg(op)
   end
 end
 
-
 prompt("Welcome to the Calculator!")
 prompt("Enter your name:")
 

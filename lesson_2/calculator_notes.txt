@@ -1,0 +1,73 @@
+1.
+Pull the whole looping logic of getting a number into its own method, instead of JUST the validation part. A lot of lines are repeated!
+
+2.
+read the docs.
+
+3. 
+If we need to add code after the case statement, it will be important to save the output of the case statement to a variable and ensure that that variable is returned implicitly or explicitly.
+
+4.
+see stripped version of calculator
+
+5.
+Kernel documentation says these methods are called "without a receiver" -- seems to imply that there is a very large scale object that they may be methods of, but that it's a special kind of object that does not need to be referred to outright. Objects are instances of Kernel, so is Kernel a class of the environment or somesuch? No, Kernel is a module that contains both class and instance methods... something very large includes these methods and doesn't require reference.
+Kernel includes procedures, that is things that would explicitly ignore the receiver, so it's possible to not include the receiver at all.
+=> this giant object I was envisioning is real, it's a thing called main which loads the properties of Object.
+
+6.
+extract message files into a config file (hashlike?) and lookup values. store multiple languages. COOL!
+
+==========
+
+1. BETTER INTEGER VALIDATION
+
+we want string input to become an integer
+we want positive, zero, and negative values to be possible
+we want to best match what the user has input as a string without loss
+
+validation: convert the string to an integer, then back to a string
+does this match the original string?
+if not, try again because there has been some loss
+
+other options: 
+-- regex to capture digits
+-- built in Integer method
+
+2. NUMBER VALIDATION
+
+entry may be an integer
+entry may be a float
+goal: accept the input as the better matched type of number
+return true if the input is either a valid float or valid integer
+-- problem is a little confusing because the operations will still handle the number like an integer or float no matter what
+-- but we are not expected to deal with this part
+
+p number?("") == false
+p number?("cat") == false
+
+p number?("0.cat") == false
+
+p number?("0") == true # 0
+p number?("0.0") == true # 0.0
+p number?("69") == true # 69
+p number?("69.0") == true # 69.0
+p number?("-69") == true # -69
+p number?("-69.0") == true # -69.0
+p number?("2.0000") == true # 2.0
+
+Strings -> Int or Float
+Rule -> Regexp
+
+string contains only digits and period
+	regex: /^-?[\d\.]+$/
+	split string by periods
+	string doesn't include a period (1 unit): true (integer)
+	string contains 1 period (2 units): true (float)
+	else false
+else false
+
+
+3. OPERATION TO MESSAGE
+4. PROGRAM MESSAGES TO CONFIG FILE
+5. INTERNATIONALIZATION/TRANSLATION

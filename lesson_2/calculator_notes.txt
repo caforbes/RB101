@@ -67,7 +67,39 @@ string contains only digits and period
 	else false
 else false
 
-
 3. OPERATION TO MESSAGE
+
+save case statement to a variable
+return the variable at end of method
+
 4. PROGRAM MESSAGES TO CONFIG FILE
+
+look up how yaml files work and how to load/access them in ruby...
+
+store prompt messages in yaml
+load yaml as constant
+method: load prompt with message key parameter
+	from message key, look up message in yaml file
+	fix string from yaml so it interpolates
+		\# -> # -- requires edits to yaml if variables change
+		or split string at defined point (e.g. *)
+		concatenate pieces with optional variables input as parameters to prompt fn
+	add prompt prefix =>
+
+get message from yaml with variables as *
+split message by * into array
+read first element of split message array
+add first variable
+read second element of split message array
+add second variable, etc
+
+step through split message, then variables
+
 5. INTERNATIONALIZATION/TRANSLATION
+
+in yaml, create copies of the list with same key names
+orig with 'en', other copies with 'fr','es','ru','git','jp'
+yaml should encode other characters properly
+change prompt fn to key in language before keying in message
+-- maybe make a prompt to choose language?
+hope that the position of the variables doesn't change!

@@ -1,0 +1,33 @@
+# calculator message file
+
+:hello:      "Welcome to the Calculator!"
+
+:name-get:     "Enter your name:"
+:name-error:   "Make sure to enter your name."
+
+:num1:        "What is your first number?"
+:num2:        "What is your second number?"
+:num-error:    "That doesn't look like a valid number."
+:num-confirm:  "I see, you chose * and *!"
+# first number / second number
+
+:choose-op:    "What operation would you like to perform on these numbers?
+  1) add
+  2) subtract
+  3) multiply
+  4) divide"
+:choose-error: "You must choose 1, 2, 3, or 4."
+
+
+:calculate:  "* your numbers..."
+# insert word for operation as below:
+:add:  "Adding"
+:sub:  "Subtracting"
+:mul:  "Multiplying"
+:div:  "Dividing"
+
+:result:     "Your result is *!"
+# result of calculation
+:try-again?: "Do you want to perform another operation? (Y to calculate again)"
+:goodbye:    "Thanks for calculating, *!"
+# user's name

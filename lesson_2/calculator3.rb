@@ -1,61 +1,51 @@
-def prompt(message)
+require 'yaml'
+MESSAGES = YAML.safe_load(File.read("calculator.yml"))
+
+def prompt(message, *variables)
+  if variables
+    variables = variables.to_a
+    message_list = MESSAGES[message].split("*")
+    message = message_list.zip(variables).flatten.join
+  end
+
   Kernel.puts("=> #{message}")
 end
 
 def valid_integer?(input)
-  # original
-  # input == input.to_i().to_s()
-
-  # new version
-  /^\d+/.match(input)
+  /^-?\d+$/.match(input)
 end
 
 def valid_float?(input)
-  /\d/.match(input) && /\d*\.?\d*/.match(input)
+  /\d/.match(input) && /^-?\d*\.\d*$/.match(input)
 end
 
 def number?(input)
-  # original version (it works!!!)
-  # if /^-?[\d\.]+$/.match(input)  # only digits and .
-  #   print period_units = input.split(".",3)
-  #   if period_units.size == 1
-  #     true # integer
-  #   elsif period_units.size == 2
-  #     true # float
-  #   else
-  #     false
-  #   end
-  # else
-  #   false
-  # end
-
-  # new version
   valid_integer?(input) || valid_float?(input)
 end
-# still needs to be able to add/sub/mult with floats
 
-def operator_gerund(op)
-  case op
-  when '1'
-    'Adding'
-  when '2'
-    'Subtracting'
-  when '3'
-    'Multiplying'
-  when '4'
-    'Dividing'
-  end
+def operator_word(op)
+  word = case op
+         when '1'
+           MESSAGES[:add]
+         when '2'
+           MESSAGES[:sub]
+         when '3'
+           MESSAGES[:mul]
+         when '4'
+           MESSAGES[:div]
+         end
+  word
 end
 
-prompt("Welcome to the Calculator!")
-prompt("Enter your name:")
+prompt(:hello)
+prompt(:"name-get")
 
 name = ''
 loop do
   name = Kernel.gets().chomp()
 
   if name.empty?()
-    prompt("Make sure to enter your name.")
+    prompt(:"name-error")
   else
     break
   end
@@ -64,65 +54,56 @@ end
 loop do # main loop
   num1 = ''
   loop do
-    prompt("What is your first number?")
+    prompt(:num1)
     num1 = Kernel.gets().chomp()
 
     if number?(num1)
-      break
+      break num1 = valid_integer?(num1) ? Integer(num1) : Float(num1)
     else
-      prompt("That doesn't look like a valid number.")
-      prompt("Only integers are allowed.")
+      prompt(:"num-error")
     end
   end
 
   num2 = ''
   loop do
-    prompt("What is your second number?")
+    prompt(:num2)
     num2 = Kernel.gets().chomp()
 
     if number?(num2)
-      break
+      break num2 = valid_integer?(num2) ? Integer(num2) : Float(num2)
     else
-      prompt("That doesn't look like a valid number.")
-      prompt("Only integers are allowed.")
+      prompt(:"num-error")
     end
   end
 
-  prompt("I see, you chose #{num1} and #{num2}!")
+  prompt(:"num-confirm", num1, num2)
 
-  op_prompt = <<-MSG
-    What operation would you like to perform on these numbers?
-        1) add
-        2) subtract
-        3) multiply
-        4) divide
-  MSG
-  prompt(op_prompt)
-  
+  prompt(:"choose-op")
+
   operation = ""
   loop do
     operation = Kernel.gets().chomp()
     break if %w(1 2 3 4).include?(operation)
-    prompt("You must choose 1, 2, 3, or 4.")
+    prompt(:"choose-error")
   end
 
-  result =  case operation
-            when '1'
-              num1.to_i() + num2.to_i()
-            when '2'
-              num1.to_i() - num2.to_i()
-            when '3'
-              num1.to_i() * num2.to_i()
-            when '4'
-              num1.to_f() / num2.to_f()
-            end
+  result = case operation
+           when '1'
+             num1 + num2
+           when '2'
+             num1 - num2
+           when '3'
+             num1 * num2
+           when '4'
+             num1.to_f() / num2.to_f()
+           end
 
-  prompt("#{operator_gerund(operation)} your numbers...")
-  prompt("Your result is #{result}!")
+  prompt(:calculate, operator_word(operation))
+  prompt(:result, result)
 
-  prompt("Do you want to perform another operation? (Y to calculate again)")
+  prompt(:"try-again?")
   again = Kernel.gets().chomp()
   break unless again.downcase().start_with?('y')
 end
 
-prompt("Thanks for calculating, #{name}!")
+prompt(:goodbye, name)

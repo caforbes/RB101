@@ -2,6 +2,15 @@ def prompt(message)
   puts(">> #{message}")
 end
 
+def continue?
+  prompt("Does that look right? (Y to confirm)")
+  confirm = gets.chomp.downcase
+
+  res = confirm.start_with?('y') ? true : false
+  prompt("Okay then, let's try again.") unless res
+  res
+end
+
 def valid_int?(str)
   str.match(/^-?[\d]+$/)
 end
@@ -38,7 +47,6 @@ end
 
 prompt("Welcome to the Monthly Payment Calculator!")
 
-amount_str = ""
 amount = nil
 loop do
   prompt("Please enter the amount of your loan.")
@@ -58,17 +66,15 @@ loop do
 
   prompt("You entered a loan amount of #{amount}.")
 
-  prompt("Does that look right? (Y to confirm)")
-  confirm = gets.chomp.downcase
-  break if confirm.start_with?('y')
-  prompt("Okay then, let's try again.")
+  break if continue?
 end
 
 years = 0
-months = 0
 loop do
   prompt("Please enter the duration of your loan in years.")
   years = gets.chomp
+
+  years = years.chars.select { |c| c.match(/[\d\.-]/) }.join
 
   if get_number(years).nil?
     prompt("That doesn't look like a number! Try again.")
@@ -80,20 +86,14 @@ loop do
     years = get_number(years)
   end
 
-  months = y_to_m(years)
+  prompt("You entered #{years} years (#{y_to_m(years)} months).")
 
-  prompt("You entered #{years} years (#{months} months).")
-
-  prompt("Does that look right? (Y to confirm)")
-  confirm = gets.chomp.downcase
-  break if confirm.start_with?('y')
-  prompt("Okay then, let's try again.")
+  break if continue?
 end
 
 apr = 0
-apr_dec = 0
 loop do
-  prompt("Please enter the APR of your loan as a percentage.")
+  prompt("Please enter the APR of your loan as a percentage (e.g. 5%).")
   apr_str = gets.chomp
 
   apr = apr_str.chars.select { |c| c.match(/[\d\.-]/) }.join
@@ -108,19 +108,14 @@ loop do
     apr = get_number(apr)
   end
 
-  apr_dec = perc_to_dec(apr)
+  prompt("You entered an APR of #{apr}% (or #{perc_to_dec(apr)}).")
 
-  prompt("You entered an APR of #{apr}% (or #{apr_dec}).")
-
-  prompt("Does that look right? (Y to confirm)")
-  confirm = gets.chomp.downcase
-  break if confirm.start_with?('y')
-  prompt("Okay then, let's try again.")
+  break if continue?
 end
 
-prompt("Calculating your monthly payment...")
+prompt("Calculating your result...")
 
 result = monthly_payment(amount, apr, years)
-prompt("Your monthly payment is #{result}/month.")
+prompt("Your payment is #{result}/month.")
 
 prompt("Thanks for calculating. Good luck!")

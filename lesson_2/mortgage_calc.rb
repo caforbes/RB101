@@ -6,9 +6,9 @@ def continue?
   prompt("Does that look right? (Y to confirm)")
   confirm = gets.chomp.downcase
 
-  res = confirm.start_with?('y') ? true : false
-  prompt("Okay then, let's try again.") unless res
-  res
+  confirm = confirm.start_with?('y') ? true : false
+  prompt("Okay then, let's try again.") unless confirm
+  confirm
 end
 
 def valid_int?(str)
@@ -20,13 +20,13 @@ def valid_float?(str)
 end
 
 def get_number(input)
-  result = nil
+  input = input.chars.select { |c| c.match(/[\d\.-]/) }.join
+
   if valid_int?(input)
-    result = Integer(input)
+    Integer(input)
   elsif valid_float?(input)
-    result = Float(input)
+    Float(input + "0")
   end
-  result
 end
 
 def y_to_m(years)
@@ -47,12 +47,10 @@ end
 
 prompt("Welcome to the Monthly Payment Calculator!")
 
-amount = nil
+amount = ""
 loop do
   prompt("Please enter the amount of your loan.")
-  amount_str = gets.chomp
-
-  amount = amount_str.chars.select { |c| c.match(/[\d\.-]/) }.join
+  amount = gets.chomp
 
   if get_number(amount).nil?
     prompt("That doesn't look like a number! Try again.")
@@ -69,12 +67,10 @@ loop do
   break if continue?
 end
 
-years = 0
+years = ""
 loop do
   prompt("Please enter the duration of your loan in years.")
   years = gets.chomp
-
-  years = years.chars.select { |c| c.match(/[\d\.-]/) }.join
 
   if get_number(years).nil?
     prompt("That doesn't look like a number! Try again.")
@@ -91,12 +87,10 @@ loop do
   break if continue?
 end
 
-apr = 0
+apr = ""
 loop do
   prompt("Please enter the APR of your loan as a percentage (e.g. 5%).")
-  apr_str = gets.chomp
-
-  apr = apr_str.chars.select { |c| c.match(/[\d\.-]/) }.join
+  apr = gets.chomp
 
   if get_number(apr).nil?
     prompt("That doesn't look like a number! Try again.")

@@ -71,6 +71,28 @@ def get_APR
   end
 end
 
+def get_user_value(prompt_msg, confirm_msg) # testing
+  loop do
+    prompt(prompt_msg)
+    value = gets.chomp
+
+    if get_number(value).nil?
+      prompt("That doesn't look like a number! Try again.")
+      next
+    elsif get_number(value) <= 0
+      prompt("You must enter a positive number! Try again.")
+      next
+    else
+      value = get_number(value)
+    end
+
+    prompt(confirm_msg) # this needs significant work
+    # maybe adjust prompt message to zip with/interpolate arguments
+
+    break value if user_continue?
+  end
+end
+
 def get_number(input)
   input = input.chars.select { |c| c.match(/[\d\.-]/) }.join
 

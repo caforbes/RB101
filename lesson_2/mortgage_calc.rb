@@ -2,7 +2,7 @@ def prompt(message)
   puts(">> #{message}")
 end
 
-def continue?
+def user_continue?
   prompt("Does that look right? (Y to confirm)")
   confirm = gets.chomp.downcase
 
@@ -11,12 +11,64 @@ def continue?
   confirm
 end
 
-def valid_int?(str)
-  str.match(/^-?[\d]+$/)
+def get_loan_amt
+  loop do
+    prompt("Please enter the amount of your loan.")
+    amount = gets.chomp
+
+    if get_number(amount).nil?
+      prompt("That doesn't look like a number! Try again.")
+      next
+    elsif get_number(amount) <= 0
+      prompt("You must enter a positive loan amount! Try again.")
+      next
+    else
+      amount = get_number(amount)
+    end
+
+    prompt("You entered a loan amount of #{amount}.")
+    break amount if user_continue?
+  end
 end
 
-def valid_float?(str)
-  str.match(/-?\d/) && str.match(/^-?\d*\.\d*$/)
+def get_loan_duration
+  loop do
+    prompt("Please enter the duration of your loan in years.")
+    years = gets.chomp
+
+    if get_number(years).nil?
+      prompt("That doesn't look like a number! Try again.")
+      next
+    elsif get_number(years) <= 0
+      prompt("You must enter a positive number of years! Try again.")
+      next
+    else
+      years = get_number(years)
+    end
+
+    prompt("You entered #{years} years (#{y_to_m(years)} months).")
+    break years if user_continue?
+  end
+end
+
+def get_APR
+  loop do
+    prompt("Please enter the APR of your loan as a percentage (e.g. 5%).")
+    apr = gets.chomp
+
+    if get_number(apr).nil?
+      prompt("That doesn't look like a number! Try again.")
+      next
+    elsif get_number(apr) <= 0
+      prompt("You must enter a positive number for your APR! Try again.")
+      next
+    else
+      apr = get_number(apr)
+    end
+
+    prompt("You entered an APR of #{apr}% (or #{perc_to_dec(apr)}).")
+    break apr if user_continue?
+  end
 end
 
 def get_number(input)
@@ -29,15 +81,15 @@ def get_number(input)
   end
 end
 
-def y_to_m(years)
-  (years * 12).to_i
+def valid_int?(str)
+  str.match(/^-?[\d]+$/)
 end
 
-def perc_to_dec(perc)
-  perc * 0.01
+def valid_float?(str)
+  str.match(/-?\d/) && str.match(/^-?\d*\.\d*$/)
 end
 
-def monthly_payment(loan, apr_pct, years)
+def calculate_m_payment(loan, apr_pct, years)
   interest = (perc_to_dec(apr_pct)) / 12
   months = y_to_m(years)
 
@@ -45,71 +97,24 @@ def monthly_payment(loan, apr_pct, years)
   res.round(2)
 end
 
+def y_to_m(years)
+  (years * 12).to_i
+end
+
+def perc_to_dec(percentage)
+  percentage * 0.01
+end
+
+system("clear") || system("cls")
 prompt("Welcome to the Monthly Payment Calculator!")
 
-amount = ""
-loop do
-  prompt("Please enter the amount of your loan.")
-  amount = gets.chomp
-
-  if get_number(amount).nil?
-    prompt("That doesn't look like a number! Try again.")
-    next
-  elsif get_number(amount) <= 0
-    prompt("You must enter a positive amount! Try again.")
-    next
-  else
-    amount = get_number(amount)
-  end
-
-  prompt("You entered a loan amount of #{amount}.")
-
-  break if continue?
-end
-
-years = ""
-loop do
-  prompt("Please enter the duration of your loan in years.")
-  years = gets.chomp
-
-  if get_number(years).nil?
-    prompt("That doesn't look like a number! Try again.")
-    next
-  elsif get_number(years) <= 0
-    prompt("You must enter a positive number of years! Try again.")
-    next
-  else
-    years = get_number(years)
-  end
-
-  prompt("You entered #{years} years (#{y_to_m(years)} months).")
-
-  break if continue?
-end
-
-apr = ""
-loop do
-  prompt("Please enter the APR of your loan as a percentage (e.g. 5%).")
-  apr = gets.chomp
-
-  if get_number(apr).nil?
-    prompt("That doesn't look like a number! Try again.")
-    next
-  elsif get_number(apr) <= 0
-    prompt("You must enter a positive number for your APR! Try again.")
-    next
-  else
-    apr = get_number(apr)
-  end
-
-  prompt("You entered an APR of #{apr}% (or #{perc_to_dec(apr)}).")
-
-  break if continue?
-end
+amount = get_loan_amt
+years = get_loan_duration
+apr = get_APR
 
 prompt("Calculating your result...")
 
-result = monthly_payment(amount, apr, years)
-prompt("Your payment is #{result}/month.")
+monthly_payment = calculate_m_payment(amount, apr, years)
 
+prompt("Your payment is #{monthly_payment}/month.")
 prompt("Thanks for calculating. Good luck!")

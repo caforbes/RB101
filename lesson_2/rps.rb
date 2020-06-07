@@ -1,16 +1,24 @@
-VALID_CHOICES = %w(rock paper scissors lizard spock)
+VALID_CHOICES = %w(rock paper scissors lizard Spock)
 
 def prompt(msg)
   Kernel.puts(">> #{msg}")
 end
 
+def expand_shorthand(input)
+  result = input
+  VALID_CHOICES.each do |option|
+    result = option if option.start_with?(input)
+  end
+  result
+end
+
 def win?(player1, player2)
   victory_condition = {
     'rock' => %w(lizard scissors),
-    'paper' => %w(rock spock),
+    'paper' => %w(rock Spock),
     'scissors' => %w(paper lizard),
-    'lizard' => %w(spock paper),
-    'spock' => %w(scissors rock)
+    'lizard' => %w(Spock paper),
+    'Spock' => %w(scissors rock)
   }
   victory_condition[player1].include?(player2)
 end
@@ -31,7 +39,10 @@ loop do
 
   loop do
     prompt("Choose one: #{VALID_CHOICES.join(', ')}")
+    prompt("(You can just enter the first letter (capital for Spock)")
     choice = Kernel.gets.chomp
+
+    choice = expand_shorthand(choice) if choice.length == 1
 
     if VALID_CHOICES.include?(choice)
       break

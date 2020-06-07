@@ -1,13 +1,18 @@
-VALID_CHOICES = %w(rock paper scissors)
+VALID_CHOICES = %w(rock paper scissors lizard spock)
 
 def prompt(msg)
   Kernel.puts(">> #{msg}")
 end
 
 def win?(player1, player2)
-  (player1 == 'rock' && player2 == 'scissors') ||
-    (player1 == 'scissors' && player2 == 'paper') ||
-    (player1 == 'paper' && player2 == 'rock')
+  victory_condition = {
+    'rock' => %w(lizard scissors),
+    'paper' => %w(rock spock),
+    'scissors' => %w(paper lizard),
+    'lizard' => %w(spock paper),
+    'spock' => %w(scissors rock)
+  }
+  victory_condition[player1].include?(player2)
 end
 
 def display_game_result(player, computer)
@@ -20,6 +25,7 @@ def display_game_result(player, computer)
   end
 end
 
+system('clear') || system('cls')
 loop do
   choice = ''
 

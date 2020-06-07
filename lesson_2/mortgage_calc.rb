@@ -11,85 +11,57 @@ def user_continue?
   confirm
 end
 
-def get_loan_amt
-  loop do
-    prompt("Please enter the amount of your loan.")
-    amount = gets.chomp
-
-    if get_number(amount).nil?
-      prompt("That doesn't look like a number! Try again.")
-      next
-    elsif get_number(amount) <= 0
-      prompt("You must enter a positive loan amount! Try again.")
-      next
-    else
-      amount = get_number(amount)
-    end
-
-    prompt("You entered a loan amount of #{amount}.")
-    break amount if user_continue?
-  end
+def user_loan_amt
+  get_user_value("amount")
 end
 
-def get_loan_duration
-  loop do
-    prompt("Please enter the duration of your loan in years.")
-    years = gets.chomp
-
-    if get_number(years).nil?
-      prompt("That doesn't look like a number! Try again.")
-      next
-    elsif get_number(years) <= 0
-      prompt("You must enter a positive number of years! Try again.")
-      next
-    else
-      years = get_number(years)
-    end
-
-    prompt("You entered #{years} years (#{y_to_m(years)} months).")
-    break years if user_continue?
-  end
+def user_loan_duration
+  get_user_value("duration")
 end
 
-def get_APR
-  loop do
-    prompt("Please enter the APR of your loan as a percentage (e.g. 5%).")
-    apr = gets.chomp
-
-    if get_number(apr).nil?
-      prompt("That doesn't look like a number! Try again.")
-      next
-    elsif get_number(apr) <= 0
-      prompt("You must enter a positive number for your APR! Try again.")
-      next
-    else
-      apr = get_number(apr)
-    end
-
-    prompt("You entered an APR of #{apr}% (or #{perc_to_dec(apr)}).")
-    break apr if user_continue?
-  end
+def user_apr
+  get_user_value("APR")
 end
 
-def get_user_value(prompt_msg, confirm_msg) # testing
+def get_user_value(value_type) # testing
   loop do
-    prompt(prompt_msg)
+    prompt(prompt_user_msg(value_type))
     value = gets.chomp
 
     if get_number(value).nil?
       prompt("That doesn't look like a number! Try again.")
       next
     elsif get_number(value) <= 0
-      prompt("You must enter a positive number! Try again.")
+      prompt("You must enter a positive #{value_type}! Try again.")
       next
     else
       value = get_number(value)
     end
 
-    prompt(confirm_msg) # this needs significant work
-    # maybe adjust prompt message to zip with/interpolate arguments
-
+    prompt(confirmation_msg(value, value_type))
     break value if user_continue?
+  end
+end
+
+def prompt_user_msg(value_type)
+  case value_type
+  when "amount"
+    "Please enter the amount of your loan."
+  when "duration"
+    "Please enter the duration of your loan in years."
+  when "APR"
+    "Please enter the APR of your loan as a percentage (e.g. 5%)."
+  end
+end
+
+def confirmation_msg(input, value_type)
+  case value_type
+  when "amount"
+    "You entered a loan amount of #{input}."
+  when "duration"
+    "You entered #{input} years (#{y_to_m(input)} months)."
+  when "APR"
+    "You entered an APR of #{input}% (or #{perc_to_dec(input)})."
   end
 end
 
@@ -130,9 +102,9 @@ end
 system("clear") || system("cls")
 prompt("Welcome to the Monthly Payment Calculator!")
 
-amount = get_loan_amt
-years = get_loan_duration
-apr = get_APR
+amount = user_loan_amt
+years = user_loan_duration
+apr = user_apr
 
 prompt("Calculating your result...")
 

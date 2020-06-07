@@ -56,7 +56,7 @@ def display_game_result(player, computer)
 end
 
 def display_scores(scores)
-  standings = %Q(
+  standings = %(
     Player wins = #{scores[:player]}
     Computer wins = #{scores[:computer]}
   )
@@ -69,7 +69,7 @@ def display_final_result(scores)
   elsif scores[:computer] == 5
     prompt("Computer is the GRAND WINNER!!")
   else
-    prompt("There is no grand winner: play more rounds next time!")
+    prompt("There is no grand winner. Play more rounds next time!")
   end
 end
 

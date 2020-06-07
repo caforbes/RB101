@@ -33,7 +33,36 @@ def display_game_result(player, computer)
   end
 end
 
+def display_final_result(scores)
+  if scores[:player] == 5
+    prompt("You are the GRAND WINNER!!")
+  elsif scores[:computer] == 5
+    prompt("Computer is the GRAND WINNER!!")
+  else
+    "Final result: #{match_result(scores)}"
+  end
+end
+
+def match_result(scores)
+  "Player wins = #{scores[:player]}, Computer wins = #{scores[:computer]}"
+end
+
+def update_scores(player, computer, scores)
+  if win?(player, computer)
+    scores[:player] += 1
+  elsif win?(computer, player)
+    scores[:computer] += 1
+  end
+  scores
+end
+
 system('clear') || system('cls')
+
+scores = {
+  player: 0,
+  computer: 0
+}
+
 loop do
   choice = ''
 
@@ -57,10 +86,16 @@ loop do
 
   display_game_result(choice, computer_choice)
 
+  scores = update_scores(choice, computer_choice, scores)
+  prompt("Current standings: #{match_result(scores)}")
+
+  break if scores[:player] == 5 || scores[:computer] == 5
+
   prompt("Do you want to play again?")
   answer = Kernel.gets.chomp
 
   break unless answer.downcase.start_with?('y')
 end
 
+display_final_result(scores)
 prompt("Thanks for playing!")

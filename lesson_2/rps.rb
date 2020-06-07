@@ -1,4 +1,4 @@
-VALID_CHOICES = %w(rock paper scissors lizard Spock)
+VALID_CHOICES = %w(rock paper scissors lizard spock)
 
 def prompt(msg)
   Kernel.puts(">> #{msg}")
@@ -12,10 +12,10 @@ def user_move
   choice = ''
   loop do
     prompt("Choose one: #{VALID_CHOICES.join(', ')}")
-    prompt("(You can just enter the first letter (capital for Spock)")
-    choice = Kernel.gets.chomp
+    prompt("You can just enter the first letter or two: (r)ock, (sp)ock")
+    choice = Kernel.gets.chomp.downcase
 
-    choice = expand_shorthand(choice) if choice.length == 1
+    choice = expand_shorthand(choice) if choice.length < 3
 
     if VALID_CHOICES.include?(choice)
       break
@@ -28,8 +28,10 @@ end
 
 def expand_shorthand(input)
   result = input
-  VALID_CHOICES.each do |option|
-    result = option if option.start_with?(input)
+  unless input == 's'
+    VALID_CHOICES.each do |option|
+      result = option if option.start_with?(input)
+    end
   end
   result
 end
@@ -37,10 +39,10 @@ end
 def win?(player1, player2)
   victory_condition = {
     'rock' => %w(lizard scissors),
-    'paper' => %w(rock Spock),
+    'paper' => %w(rock spock),
     'scissors' => %w(paper lizard),
-    'lizard' => %w(Spock paper),
-    'Spock' => %w(scissors rock)
+    'lizard' => %w(spock paper),
+    'spock' => %w(scissors rock)
   }
   victory_condition[player1].include?(player2)
 end
@@ -86,6 +88,9 @@ scores = {
   player: 0,
   computer: 0
 }
+
+prompt("Welcome to Rock Paper Scissors Lizard spock!")
+prompt("The first to five wins becomes the Grand Winner.")
 
 loop do
   clear_screen

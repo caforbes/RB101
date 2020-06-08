@@ -73,9 +73,9 @@ end
 def display_final_result(scores)
   display_scores(scores)
 
-  if scores[:player] == 5
+  if scores[:player] == ENDS_AT
     prompt("You are the GRAND WINNER!!")
-  elsif scores[:computer] == 5
+  elsif scores[:computer] == ENDS_AT
     prompt("Computer is the GRAND WINNER!!")
   else
     prompt("There is no grand winner. Play more rounds next time!")

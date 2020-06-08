@@ -1,5 +1,17 @@
 VALID_CHOICES = %w(rock paper scissors lizard spock)
 
+VALID_SHORTHAND = %w(r p sc l sp)
+
+WIN_CONDITIONS = {
+  'rock' => %w(lizard scissors),
+  'paper' => %w(rock spock),
+  'scissors' => %w(paper lizard),
+  'lizard' => %w(spock paper),
+  'spock' => %w(scissors rock)
+}
+
+ENDS_AT = 5
+
 def prompt(msg)
   Kernel.puts(">> #{msg}")
 end
@@ -12,12 +24,13 @@ def user_move
   choice = ''
   loop do
     prompt("Choose one: #{VALID_CHOICES.join(', ')}")
-    prompt("You can just enter the first letter or two: (r)ock, (sp)ock")
+    prompt("(For short, you can enter: #{VALID_SHORTHAND.join(', ')})")
     choice = Kernel.gets.chomp.downcase
 
-    choice = expand_shorthand(choice) if choice.length < 3
-
     if VALID_CHOICES.include?(choice)
+      break
+    elsif VALID_SHORTHAND.include?(choice)
+      choice = expand_shorthand(choice)
       break
     else
       prompt("That's not a valid choice!")
@@ -27,24 +40,15 @@ def user_move
 end
 
 def expand_shorthand(input)
-  result = input
-  unless input == 's'
-    VALID_CHOICES.each do |option|
-      result = option if option.start_with?(input)
-    end
-  end
-  result
+  VALID_CHOICES[VALID_SHORTHAND.index(input)]
 end
 
 def win?(player1, player2)
-  victory_condition = {
-    'rock' => %w(lizard scissors),
-    'paper' => %w(rock spock),
-    'scissors' => %w(paper lizard),
-    'lizard' => %w(spock paper),
-    'spock' => %w(scissors rock)
-  }
-  victory_condition[player1].include?(player2)
+  WIN_CONDITIONS[player1].include?(player2)
+end
+
+def match_over?(scores)
+  scores[:player] == ENDS_AT || scores[:computer] == ENDS_AT
 end
 
 def display_game_result(player, computer)
@@ -58,7 +62,8 @@ def display_game_result(player, computer)
 end
 
 def display_scores(scores)
-  standings = %(
+  standings = %(Standings:
+
     Player wins = #{scores[:player]}
     Computer wins = #{scores[:computer]}
   )
@@ -66,6 +71,8 @@ def display_scores(scores)
 end
 
 def display_final_result(scores)
+  display_scores(scores)
+
   if scores[:player] == 5
     prompt("You are the GRAND WINNER!!")
   elsif scores[:computer] == 5
@@ -84,34 +91,56 @@ def update_scores(player, computer, scores)
   scores
 end
 
-scores = {
-  player: 0,
-  computer: 0
-}
-
-prompt("Welcome to Rock Paper Scissors Lizard spock!")
-prompt("The first to five wins becomes the Grand Winner.")
-
-loop do
-  clear_screen
-
-  choice = user_move
-  computer_choice = VALID_CHOICES.sample
-
-  prompt("You chose #{choice}! Computer chose #{computer_choice}!")
-
-  display_game_result(choice, computer_choice)
-
-  scores = update_scores(choice, computer_choice, scores)
-  display_scores(scores)
-
-  break if scores[:player] == 5 || scores[:computer] == 5
-
-  prompt("Do you want to play again?")
-  answer = Kernel.gets.chomp
-
-  break unless answer.downcase.start_with?('y')
+def quit?(input)
+  true if input.downcase == 'q'
 end
 
-display_final_result(scores)
+def restart?(input)
+  true if input.downcase == 'y'
+end
+
+clear_screen
+intro = %(=== Welcome to Rock Paper Scissors Lizard Spock! ===
+
+  You will play vs the Computer.
+  The first to #{ENDS_AT} wins takes the match and becomes the Grand Winner.
+
+  Enter any key to start playing!
+)
+prompt(intro)
+Kernel.gets.chomp
+
+loop do
+  scores = {
+    player: 0,
+    computer: 0
+  }
+
+  loop do # round
+    clear_screen
+    display_scores(scores)
+
+    choice = user_move
+    computer_choice = VALID_CHOICES.sample
+
+    prompt("You chose #{choice}! Computer chose #{computer_choice}!")
+
+    display_game_result(choice, computer_choice)
+
+    scores = update_scores(choice, computer_choice, scores)
+
+    break if match_over?(scores)
+
+    prompt("Press enter to start the next round. (Q to quit)")
+    answer = Kernel.gets.chomp
+    break if quit?(answer)
+  end
+
+  display_final_result(scores)
+
+  prompt("Do you want to play a new game? (Y to restart)")
+  answer = Kernel.gets.chomp
+  break unless restart?(answer)
+end
+
 prompt("Thanks for playing!")

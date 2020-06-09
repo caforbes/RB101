@@ -92,11 +92,11 @@ def update_scores(player, computer, scores)
 end
 
 def quit?(input)
-  true if input.downcase == 'q'
+  input.downcase == 'q'
 end
 
 def restart?(input)
-  true if input.downcase == 'y'
+  input.downcase == 'y'
 end
 
 clear_screen

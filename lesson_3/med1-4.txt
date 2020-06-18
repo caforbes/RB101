@@ -1,0 +1,3 @@
+Yes, there is a difference (though I don't quite understand the purpose of the method):
+  - buffer1 will mutate the input buffer array.
+  - buffer2 will not mutate the input buffer array.

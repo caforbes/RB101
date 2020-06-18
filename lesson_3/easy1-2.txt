@@ -1,0 +1,21 @@
+! is the boolean operator NOT. It takes any expression and returns the opposite of its truth value (truthiness). It is also commonly used in method names to denote a mutative method in contrast to a non-mutative method.
+
+? is part of the ternary conditional operator ?..:... It is also commonly used in method names that return a boolean.
+
+1.
+!= is a binary operator meaning "is not equal to". It should be used when you want to check that two things do not have the same value, and must be placed between the two expressions, most probably in a conditional or while statement.
+
+2.
+!variable will evaluate the truthiness of variable and return the opposite value. If variable has any value other than nil, it will be evaluated as true and return false; if variable is nil then the ! expression will return true.
+
+3.
+If you put ! after certain method names, you may by coincidence happen upon one that is itself a method name (with mutative properties). The method will then call the object and mutate it as defined. However this is not a general rule and most likely you will get a SyntaxError.
+
+4.
+If you put ? before something, you will likely get a SyntaxError as ruby tries to understand what kind of ternary conditional expression you are trying to form.
+
+5.
+Again, placing ? after something has a chance of you calling a method name that contains a final ? itself, such as empty?. However if there is no such method, you will get a SyntaxError.
+
+6.
+Double !! before an expression will first return its reversed truth value, then reverse it again to provide its original truth value. That is, !!nil and !!false will return false, and all other expressions with prepended !! will return true.

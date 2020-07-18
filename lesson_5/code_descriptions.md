@@ -81,3 +81,50 @@ TIPS:
 	- use of return value
 
 ## EXAMPLE 6
+
+The goal of this code is to return a list of hashes where, for all pairs in the hash, the key matches the first letter of the hash. The return value is 
+
+`=> [{ :c => "cat" }]`
+
+1		We begin with an array of hashes and call the `select` method on it. This method invokes a block and returns a new array of all elements where the block evaluates to true. This is only the element hash `{ c: 'cat' }`
+
+1-5	An outer block operating on the sub-hashes (via local variable `hash`). It returns the boolean return values of the `all?` method and passes it to `select`.
+
+2		Invocation of the `all?` method. It operates on each of the sub-hashes. It invokes a block, and considers the truthiness of the return value of the block to return a boolean, which is passed to the outer block.
+
+2-4 An inner block, operating on the key/value pairs contained in the sub-hashes (through initialized variables `key` and `value`). Its return value, a boolean, is passed to and used by the `any?` method.
+
+3		Invocation of the `==` comparison method. It operates on the first character of each hash value, with the argument a string version of `key`. It returns a boolean (`true` if the first value character matches the key), which is passed to the block.
+
+3		Invocation of `String#[]`. It operates on each hash value string and takes the integer `0` as its argument, and returns a single character string at that index for use by the `==` method.
+
+3		Invocation of `to_s` method. It operates on the key symbol of each hash and returns a new string, passed to and used by the `==` method.
+
+The important evaluation part of this code occurs on line 3, where for each key/value pair, it is determined whether the key (converted to a string with `to_s`) matches the first character of the value (retrieved with `String#[]`). This value is passed to the block initialized and evaluated by `all?`, which properly evaluates to true only when all elements in a hash return `true` for that operation. Finally, `select` returns only those hashes which `all?` evaluates to `true`.
+
+>> If we used `any?` instead, we would change the behavior of `select` to return hashes where any key matched the first character of the value, rather than hashes where all pairs had that property. The first hash in the sub-array would evaluate to true under `any?`, but not `all?`.
+
+...
+
+## EXAMPLE 10
+
+The goal of this code is to increment every number in a double/triple nested array. The code successfully returns:
+
+`=> [[[2, 3], [4,5]], [6,7]]`
+
+We begin with a call to an outer `map` method (line 1). This method operates on each of the two sub-arrays `[[2, 3], [4,5]]` and `[6,7]`. Based on the return value of the block it initializes, it returns a new transformed array returned at the end of the program.
+
+The outer block (lines 1-11) operates on the sub-arrays and passes its return value (from an inner call to `map`) to the outer `map` for transformation.
+
+The inner `map` invocation (line 2) operates on the elements of the sub-arrays, which are either themselves arrays (in the first sub-array) or integers (in the second sub-array). It performs transformation on the level 2 sub-arrays and returns new sub-arrays to the outer block.
+
+The inner block (lines 2-10) operates on the array and integer elements of the sub-arrays. It passes its return value, retrieved from the conditional statement, to the inner `map`.
+
+Inside the inner block is a conditional statement (lines 3-9). This statement returns the transformed value of the sub-arrays' elements, depending on the element type. The return value is passed to the inner block.
+
+A crucial part of the conditional is evaluation of the type of the elements through a call to `==` (line 3). It operates on the size of the string value of the element (through a chained call to `to_s.size` on the element) and the argument `1`, returning a boolean value that identifies whether the element is an integer or string. This value is passed to the conditional statement for evaluation.
+
+The iteration/transformation occurs in the conditional statement. On line 4, after the type-evaluating conditional evaluates to `true`, recognizing an integer, there is a call to `+`, which operates on the integer element and `1` to produce an incremented element.
+Within the else clause, the elements under evaluation are arrays. Instead of directly calling `+`, there is a third invocation of `map` on line 6, which transforms the third-level sub-arrays. The return value of `map` is passed to the conditional and inner block.
+The third inner `map` initializes a block from lines 6-8. Within the block we see a call to `+` on line 7 with the inner integer element and `1` as arguments; this is passed to the block, and returned to `map`, which returns a transformed third-layer sub-array `[6,7]`.
+

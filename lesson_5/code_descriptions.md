@@ -102,7 +102,7 @@ The goal of this code is to return a list of hashes where, for all pairs in the 
 
 The important evaluation part of this code occurs on line 3, where for each key/value pair, it is determined whether the key (converted to a string with `to_s`) matches the first character of the value (retrieved with `String#[]`). This value is passed to the block initialized and evaluated by `all?`, which properly evaluates to true only when all elements in a hash return `true` for that operation. Finally, `select` returns only those hashes which `all?` evaluates to `true`.
 
->> If we used `any?` instead, we would change the behavior of `select` to return hashes where any key matched the first character of the value, rather than hashes where all pairs had that property. The first hash in the sub-array would evaluate to true under `any?`, but not `all?`.
+> If we used `any?` instead, we would change the behavior of `select` to return hashes where any key matched the first character of the value, rather than hashes where all pairs had that property. The first hash in the sub-array would evaluate to true under `any?`, but not `all?`.
 
 ...
 

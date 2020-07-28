@@ -11,7 +11,27 @@ def fizzbuzz(start_num, end_num)
   end
 end
 
+def fizzbuzz_better(start_num, end_num)
+  nums = (start_num..end_num).to_a
+
+  outputs = nums.map do |num|
+    case # code structure follows logic of intent
+    when num % 3 == 0 && num % 5 == 0
+      'FizzBuzz'
+    when num % 3 == 0
+      'Fizz'
+    when num % 5 == 0
+      'Buzz'
+    else
+      num # .to_s unnecessary here -- type shift conducted by .join
+    end
+  end
+
+  puts outputs.join(', ')
+end
+
 fizzbuzz(1, 15)
+fizzbuzz_better(1, 15)
 
 =begin
 PROBLEM:

@@ -68,8 +68,20 @@ def player_move!(brd)
 end
 
 def computer_move!(brd)
-  square = empty_squares(brd).sample
+  square = find_at_risk_square(brd)
+  square = empty_squares(brd).sample if square.nil?
+
   brd[square] = COMPUTER_MARKER
+end
+
+def find_at_risk_square(brd, attacker = PLAYER_MARKER)
+  WINNING_LINES.each do |line|
+    if brd.values_at(*line).count(attacker) == 2
+      at_risk = line.select { |sq| brd[sq] == EMPTY_MARKER }
+      return at_risk.first unless at_risk.empty?
+    end
+  end
+  nil
 end
 
 def board_full?(brd)

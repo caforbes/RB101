@@ -14,6 +14,16 @@ def prompt(msg)
   puts ">> #{msg}"
 end
 
+def joinor(arr, punct=', ', conjunction='or')
+  list = ''
+  if arr.size < 3
+    arr.join(" #{conjunction} ")
+  else
+    first_set = arr[0..-2].join(punct)
+    "#{first_set}#{punct}#{conjunction} #{arr.last}"
+  end
+end
+
 def initialize_board
   new_board = {}
   (1..9).each { |num| new_board[num] = EMPTY_MARKER }
@@ -47,7 +57,7 @@ end
 def player_move!(brd)
   square = ''
   loop do
-    prompt "Choose a square (#{empty_squares(brd).join(', ')}):"
+    prompt "Choose a square (#{joinor(empty_squares(brd))}):"
     square = gets.chomp.to_i
 
     break if empty_squares(brd).include?(square)

@@ -91,8 +91,26 @@ def detect_winner(brd)
   nil
 end
 
-prompt "Welcome to TIC-TAC-TOE! Press enter to begin."
+def update_scores(player_score, computer_score, brd)
+  case detect_winner(brd)
+  when 'Player'
+    player_score += 1
+  when 'Computer'
+    computer_score += 1
+  end
+  [player_score, computer_score]
+end
+
+def display_scores(player, computer)
+  prompt "Current scores: ( Player = #{player} | Computer = #{computer} )"
+end
+
+prompt "Welcome to TIC-TAC-TOE!"
+prompt "The first to win five rounds (you or the computer) will win the game!"
+prompt "Press enter to begin."
 gets.chomp
+
+player_score, computer_score = 0, 0
 
 loop do
   board = initialize_board
@@ -110,12 +128,27 @@ loop do
   display_board(board)
 
   if someone_won?(board)
-    prompt "#{detect_winner(board)} won!"
+    prompt "#{detect_winner(board)} won this round!"
   else
     prompt "It's a tie!"
   end
 
-  prompt "Play again? (y or n)"
+  player_score,
+    computer_score = update_scores(player_score, computer_score, board)
+
+  display_scores(player_score, computer_score)
+
+  if player_score == 5
+    prompt ""
+    prompt "YOU WON THE GAME!!!!"
+    break
+  elsif computer_score == 5
+    prompt ""
+    prompt "The computer beat you!!!!"
+    break
+  end
+
+  prompt "Play the next game? (y or n)"
   answer = gets.chomp
   break unless answer.downcase == 'y'
 end

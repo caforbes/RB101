@@ -10,6 +10,9 @@ WINNING_LINES = [
   [1, 5, 9], [3, 5, 7] # diagonals
 ]
 
+FIRST_MOVE = 'Loser'
+# valid options: 'Player', 'Computer', 'Choose', 'Alternate', 'Loser'
+
 def prompt(msg)
   puts ">> #{msg}"
 end
@@ -124,6 +127,30 @@ def display_scores(player, computer)
   prompt "Current scores: ( Player = #{player} | Computer = #{computer} )"
 end
 
+def select_whose_turn
+  options = ['Player', 'Computer']
+  numbered_options = options.map.with_index do |name, num|
+    "#{num + 1} = #{name}"
+  end
+
+  choice = ''
+  loop do
+    prompt "Choose who will go first: #{joinor(numbered_options)}"
+    choice = gets.chomp.to_i - 1
+    break unless choice.negative? || choice >= options.size
+    prompt "That's not a valid option!"
+  end
+
+  options[choice]
+end
+
+def alternate_turn(first_player)
+  case first_player
+  when 'Player' then 'Computer'
+  when 'Computer' then 'Player'
+  end
+end
+
 prompt "Welcome to TIC-TAC-TOE!"
 prompt "The first to win five rounds (you or the computer) will win the game!"
 prompt "Press enter to begin."
@@ -131,17 +158,34 @@ gets.chomp
 
 player_score, computer_score = 0, 0
 
+turn =  case FIRST_MOVE
+        when 'Player', 'Computer'
+          FIRST_MOVE
+        else select_whose_turn
+        end
+
 loop do
+
   board = initialize_board
 
-  loop do
-    display_board(board)
+  if turn == 'Player'
+    loop do
+      display_board(board)
+      player_move!(board)
+      break if someone_won?(board)
 
-    player_move!(board)
-    break if someone_won?(board)
+      computer_move!(board)
+      break if someone_won?(board) || board_full?(board)
+    end
+  elsif turn == 'Computer'
+    loop do
+      computer_move!(board)
+      break if someone_won?(board) || board_full?(board)
 
-    computer_move!(board)
-    break if someone_won?(board) || board_full?(board)
+      display_board(board)
+      player_move!(board)
+      break if someone_won?(board)
+    end
   end
 
   display_board(board)
@@ -170,6 +214,13 @@ loop do
   prompt "Play the next game? (y or n)"
   answer = gets.chomp
   break unless answer.downcase == 'y'
+
+  case FIRST_MOVE
+  when 'Choose' then turn = select_whose_turn
+  when 'Alternate' then turn = alternate_turn(turn)
+  when 'Loser'
+    turn = alternate_turn(detect_winner(board)) if someone_won?(board)
+  end
 end
 
 prompt "Thanks for playing TIC-TAC-TOE! Goodbye!"

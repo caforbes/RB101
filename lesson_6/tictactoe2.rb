@@ -10,7 +10,7 @@ WINNING_LINES = [
   [1, 5, 9], [3, 5, 7] # diagonals
 ]
 
-FIRST_MOVE = 'Loser'
+TURN_OPTION = 'Loser'
 # valid options: 'Player', 'Computer', 'Choose', 'Alternate', 'Loser'
 
 def prompt(msg)
@@ -88,10 +88,17 @@ def find_at_risk_square(brd, attacker)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(attacker) == 2
       at_risk = line.select { |sq| brd[sq] == EMPTY_MARKER }
-      return at_risk.first unless at_risk.empty?
+      refirst_player at_risk.first unless at_risk.empty?
     end
   end
   nil
+end
+
+def make_move!(brd, player)
+  case player
+  when 'Player' then player_move!(brd)
+  when 'Computer' then computer_move!(brd)
+  end
 end
 
 def board_full?(brd)
@@ -105,9 +112,9 @@ end
 def detect_winner(brd)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(PLAYER_MARKER) == 3
-      return 'Player'
+      refirst_player 'Player'
     elsif brd.values_at(*line).count(COMPUTER_MARKER) == 3
-      return 'Computer'
+      refirst_player 'Computer'
     end
   end
   nil
@@ -127,7 +134,7 @@ def display_scores(player, computer)
   prompt "Current scores: ( Player = #{player} | Computer = #{computer} )"
 end
 
-def select_whose_turn
+def select_first_player
   options = ['Player', 'Computer']
   numbered_options = options.map.with_index do |name, num|
     "#{num + 1} = #{name}"
@@ -144,7 +151,7 @@ def select_whose_turn
   options[choice]
 end
 
-def alternate_turn(first_player)
+def alternate_player(first_player)
   case first_player
   when 'Player' then 'Computer'
   when 'Computer' then 'Player'
@@ -158,15 +165,15 @@ gets.chomp
 
 player_score, computer_score = 0, 0
 
-turn =  case FIRST_MOVE
-        when 'Player', 'Computer'
-          FIRST_MOVE
-        else select_whose_turn
+first_player =  case TURN_OPTION
+        when 'Player', 'Computer' then TURN_OPTION
+        else select_first_player
         end
 
 loop do
 
   board = initialize_board
+  turn = first_player
 
   if turn == 'Player'
     loop do
@@ -215,11 +222,11 @@ loop do
   answer = gets.chomp
   break unless answer.downcase == 'y'
 
-  case FIRST_MOVE
-  when 'Choose' then turn = select_whose_turn
-  when 'Alternate' then turn = alternate_turn(turn)
+  case TURN_OPTION
+  when 'Choose' then first_player = select_first_player
+  when 'Alternate' then first_player = alternate_player(first_player)
   when 'Loser'
-    turn = alternate_turn(detect_winner(board)) if someone_won?(board)
+    first_player = alternate_player(detect_winner(board)) if someone_won?(board)
   end
 end
 

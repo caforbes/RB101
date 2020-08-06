@@ -68,13 +68,20 @@ def player_move!(brd)
 end
 
 def computer_move!(brd)
-  square = find_at_risk_square(brd)
-  square = empty_squares(brd).sample if square.nil?
+  attack_option = find_at_risk_square(brd, COMPUTER_MARKER)
+  defense_option = find_at_risk_square(brd, PLAYER_MARKER)
+
+  square =  case
+            when attack_option then attack_option
+            when defense_option then defense_option
+            when brd[5] == EMPTY_MARKER then 5
+            else empty_squares(brd).sample
+            end
 
   brd[square] = COMPUTER_MARKER
 end
 
-def find_at_risk_square(brd, attacker = PLAYER_MARKER)
+def find_at_risk_square(brd, attacker)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(attacker) == 2
       at_risk = line.select { |sq| brd[sq] == EMPTY_MARKER }

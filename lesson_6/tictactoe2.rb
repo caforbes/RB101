@@ -10,8 +10,7 @@ WINNING_LINES = [
   [1, 5, 9], [3, 5, 7] # diagonals
 ]
 
-TURN_OPTION = 'Loser'
-# valid options: 'Player', 'Computer', 'Choose', 'Alternate', 'Loser'
+TURN_OPTION = 'Choose' # Player, Computer, Choose, Alternate, Loser
 
 def prompt(msg)
   puts ">> #{msg}"
@@ -88,7 +87,7 @@ def find_at_risk_square(brd, attacker)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(attacker) == 2
       at_risk = line.select { |sq| brd[sq] == EMPTY_MARKER }
-      refirst_player at_risk.first unless at_risk.empty?
+      return at_risk.first unless at_risk.empty?
     end
   end
   nil
@@ -112,9 +111,9 @@ end
 def detect_winner(brd)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(PLAYER_MARKER) == 3
-      refirst_player 'Player'
+      return 'Player'
     elsif brd.values_at(*line).count(COMPUTER_MARKER) == 3
-      refirst_player 'Computer'
+      return 'Computer'
     end
   end
   nil
@@ -173,26 +172,13 @@ first_player =  case TURN_OPTION
 loop do
 
   board = initialize_board
-  turn = first_player
+  current_player = first_player
 
-  if turn == 'Player'
-    loop do
-      display_board(board)
-      player_move!(board)
-      break if someone_won?(board)
-
-      computer_move!(board)
-      break if someone_won?(board) || board_full?(board)
-    end
-  elsif turn == 'Computer'
-    loop do
-      computer_move!(board)
-      break if someone_won?(board) || board_full?(board)
-
-      display_board(board)
-      player_move!(board)
-      break if someone_won?(board)
-    end
+  loop do
+    display_board(board)
+    make_move!(board, current_player)
+    current_player = alternate_player(current_player)
+    break if someone_won?(board) || board_full?(board)
   end
 
   display_board(board)
@@ -205,7 +191,6 @@ loop do
 
   player_score,
     computer_score = update_scores(player_score, computer_score, board)
-
   display_scores(player_score, computer_score)
 
   if player_score == 5

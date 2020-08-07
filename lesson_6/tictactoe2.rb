@@ -1,5 +1,3 @@
-require 'pry'
-
 EMPTY_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
@@ -17,7 +15,6 @@ def prompt(msg)
 end
 
 def joinor(arr, punct=', ', conjunction='or')
-  list = ''
   if arr.size < 3
     arr.join(" #{conjunction} ")
   else
@@ -73,10 +70,9 @@ def computer_move!(brd)
   attack_option = find_at_risk_square(brd, COMPUTER_MARKER)
   defense_option = find_at_risk_square(brd, PLAYER_MARKER)
 
-  square =  case
-            when attack_option then attack_option
-            when defense_option then defense_option
-            when brd[5] == EMPTY_MARKER then 5
+  square =  if attack_option then attack_option
+            elsif defense_option then defense_option
+            elsif brd[5] == EMPTY_MARKER then 5
             else empty_squares(brd).sample
             end
 
@@ -150,8 +146,8 @@ def select_first_player
   options[choice]
 end
 
-def alternate_player(first_player)
-  case first_player
+def alternate_player(player)
+  case player
   when 'Player' then 'Computer'
   when 'Computer' then 'Player'
   end
@@ -162,17 +158,18 @@ prompt "The first to win five rounds (you or the computer) will win the game!"
 prompt "Press enter to begin."
 gets.chomp
 
-player_score, computer_score = 0, 0
+player_score = 0
+computer_score = 0
 
-first_player =  case TURN_OPTION
-        when 'Player', 'Computer' then TURN_OPTION
-        else select_first_player
-        end
+plays_first = case TURN_OPTION
+              when 'Player', 'Computer' then TURN_OPTION
+              else select_first_player
+              end
 
 loop do
 
   board = initialize_board
-  current_player = first_player
+  current_player = plays_first
 
   loop do
     display_board(board)
@@ -208,10 +205,10 @@ loop do
   break unless answer.downcase == 'y'
 
   case TURN_OPTION
-  when 'Choose' then first_player = select_first_player
-  when 'Alternate' then first_player = alternate_player(first_player)
+  when 'Choose' then plays_first = select_first_player
+  when 'Alternate' then plays_first = alternate_player(plays_first)
   when 'Loser'
-    first_player = alternate_player(detect_winner(board)) if someone_won?(board)
+    plays_first = alternate_player(detect_winner(board)) if someone_won?(board)
   end
 end
 

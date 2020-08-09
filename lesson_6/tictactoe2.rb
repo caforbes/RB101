@@ -70,7 +70,7 @@ def player_move!(brd)
     square = gets.chomp
     square = square.to_i if square == square.to_i.to_s
 
-    break if  empty_squares(brd).include?(square)
+    break if empty_squares(brd).include?(square)
     prompt "That's not a valid square to move!"
   end
 
@@ -146,7 +146,6 @@ end
 def select_match_winner(scores)
   if scores[:player] == WINS_TO_VICTORY then 'Player'
   elsif scores[:computer] == WINS_TO_VICTORY then 'Computer'
-  else nil
   end
 end
 
@@ -175,7 +174,6 @@ def display_scores(score_hsh)
   computer = score_hsh[:computer]
   prompt "Current scores: ( Player = #{player} | Computer = #{computer} )"
 end
-
 
 def select_first_player
   options = ['Player', 'Computer']

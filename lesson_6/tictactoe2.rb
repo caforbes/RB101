@@ -16,6 +16,14 @@ def prompt(msg)
   puts ">> #{msg}"
 end
 
+def display_welcome
+  prompt "Welcome to TIC-TAC-TOE!"
+  prompt "It's you versus the computer."
+  prompt "The first to win #{WINS_TO_VICTORY} rounds wins the game!"
+  prompt "Press enter to begin."
+  gets.chomp
+end
+
 def joinor(arr, punct=', ', conjunction='or')
   if arr.size < 3
     arr.join(" #{conjunction} ")
@@ -99,6 +107,15 @@ def make_move!(brd, player)
   end
 end
 
+def play_game_round(board, current_player)
+  loop do
+    display_board(board)
+    make_move!(board, current_player)
+    current_player = alternate_player(current_player)
+    break if someone_won?(board) || board_full?(board)
+  end
+end
+
 def board_full?(brd)
   empty_squares(brd).empty?
 end
@@ -118,19 +135,47 @@ def detect_winner(brd)
   nil
 end
 
-def update_scores(player_score, computer_score, brd)
-  case detect_winner(brd)
-  when 'Player'
-    player_score += 1
-  when 'Computer'
-    computer_score += 1
+def display_round_winner(board)
+  if someone_won?(board)
+    prompt "#{detect_winner(board)} won this round!"
+  else
+    prompt "It's a tie!"
   end
-  [player_score, computer_score]
 end
 
-def display_scores(player, computer)
+def select_match_winner(scores)
+  if scores[:player] == WINS_TO_VICTORY then 'Player'
+  elsif scores[:computer] == WINS_TO_VICTORY then 'Computer'
+  else nil
+  end
+end
+
+def display_match_winner(scores)
+  if scores[:player] == WINS_TO_VICTORY
+    prompt ""
+    prompt "YOU WON THE GAME!!!!"
+  elsif scores[:computer] == WINS_TO_VICTORY
+    prompt ""
+    prompt "The computer beat you!!!!"
+  end
+end
+
+def update_scores(score_hsh, brd)
+  case detect_winner(brd)
+  when 'Player'
+    score_hsh[:player] += 1
+  when 'Computer'
+    score_hsh[:computer] += 1
+  end
+  score_hsh
+end
+
+def display_scores(score_hsh)
+  player = score_hsh[:player]
+  computer = score_hsh[:computer]
   prompt "Current scores: ( Player = #{player} | Computer = #{computer} )"
 end
+
 
 def select_first_player
   options = ['Player', 'Computer']
@@ -149,6 +194,15 @@ def select_first_player
   options[choice]
 end
 
+def update_first_player(current_first_player, board)
+  case TURN_OPTION
+  when 'Choose' then select_first_player
+  when 'Alternate' then alternate_player(current_first_player)
+  when 'Loser'
+    alternate_player(detect_winner(board)) if someone_won?(board)
+  end
+end
+
 def alternate_player(player)
   case player
   when 'Player' then 'Computer'
@@ -156,65 +210,57 @@ def alternate_player(player)
   end
 end
 
-prompt "Welcome to TIC-TAC-TOE!"
-prompt "It's you versus the computer."
-prompt "The first to win #{WINS_TO_VICTORY} rounds wins the game!"
-prompt "Press enter to begin."
-gets.chomp
+def prompt_for_next_game(game_type)
+  loop do
+    case game_type
+    when 'round'
+      prompt "Press enter to play the next game. (q to quit)"
+    when 'match'
+      prompt "Play another match? (y or n)"
+    end
 
-player_score = 0
-computer_score = 0
+    answer = gets.chomp.downcase
+    break answer if ['', 'y', 'n', 'q', 'yes', 'no', 'quit'].include?(answer)
 
-plays_first = case TURN_OPTION
-              when 'Player', 'Computer' then TURN_OPTION
-              else select_first_player
-              end
+    prompt "I don't understand that answer."
+  end
+end
+
+display_welcome
 
 loop do
 
-  board = initialize_board
-  current_player = plays_first
+  scores = { player: 0, computer: 0 }
+
+  plays_first = case TURN_OPTION
+                when 'Player', 'Computer' then TURN_OPTION
+                else select_first_player
+                end
 
   loop do
+    board = initialize_board
+
+    play_game_round(board, plays_first)
+
     display_board(board)
-    make_move!(board, current_player)
-    current_player = alternate_player(current_player)
-    break if someone_won?(board) || board_full?(board)
+
+    display_round_winner(board)
+
+    scores = update_scores(scores, board)
+    display_scores(scores)
+
+    winner = select_match_winner(scores)
+    display_match_winner(scores) if winner
+    break if winner
+
+    quit = prompt_for_next_game('round')
+    break if ['q', 'quit'].include?(quit)
+
+    plays_first = update_first_player(plays_first, board)
   end
 
-  display_board(board)
-
-  if someone_won?(board)
-    prompt "#{detect_winner(board)} won this round!"
-  else
-    prompt "It's a tie!"
-  end
-
-  player_score,
-    computer_score = update_scores(player_score, computer_score, board)
-  display_scores(player_score, computer_score)
-
-  if player_score == WINS_TO_VICTORY
-    prompt ""
-    prompt "YOU WON THE GAME!!!!"
-    break
-  elsif computer_score == WINS_TO_VICTORY
-    prompt ""
-    prompt "The computer beat you!!!!"
-    break
-  end
-
-  prompt "Press enter to play the next game. (q to quit)"
-  quit = gets.chomp.downcase
-
-  break if ['q', 'quit'].include?(quit)
-
-  case TURN_OPTION
-  when 'Choose' then plays_first = select_first_player
-  when 'Alternate' then plays_first = alternate_player(plays_first)
-  when 'Loser'
-    plays_first = alternate_player(detect_winner(board)) if someone_won?(board)
-  end
+  again = prompt_for_next_game('match')
+  break unless ['y', 'yes'].include?(again)
 end
 
 prompt "Thanks for playing TIC-TAC-TOE! Goodbye!"

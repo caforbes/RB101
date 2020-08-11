@@ -1,6 +1,9 @@
 FACES = (2..10).to_a.map(&:to_s) + %w(A J Q K)
 SUITS = %w(hearts spades clubs diamonds)
 
+WIN = 21
+DEALER_HALT = 17
+
 def new_deck
   deck = FACES.product(SUITS).map { |(face, suit)| "#{face} of #{suit}".upcase }
   deck.shuffle
@@ -47,7 +50,7 @@ end
 
 def dealer_turn(deck, hand)
   draw_count = 0
-  until calculate_hand_value(hand) >= 17 || busted?(hand)
+  until calculate_hand_value(hand) >= DEALER_HALT || busted?(hand)
     deal_card(deck, hand)
     draw_count += 1
   end
@@ -57,7 +60,7 @@ def dealer_turn(deck, hand)
 end
 
 def busted?(hand)
-  calculate_hand_value(hand) > 21
+  calculate_hand_value(hand) > WIN
 end
 
 def display_table(dealer, player, status='show')

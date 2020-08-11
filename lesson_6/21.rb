@@ -28,7 +28,6 @@ end
 
 def player_turn(deck, hand)
   loop do
-    stay = false
     loop do
       prompt "Do you want to (1) hit or (2) stay?"
       choice = gets.chomp.downcase
@@ -38,15 +37,11 @@ def player_turn(deck, hand)
         deal_card(deck, hand)
         display_hand(hand, 'Player')
         break
-      when '2', 'stay'
-        stay = true
-        break
-      else
-        prompt "That's not a valid answer."
+      when '2', 'stay' then return :stay
+      else prompt "That's not a valid answer."
       end
     end
-
-    break if stay || busted?(hand)
+    break if busted?(hand)
   end
 end
 
@@ -63,12 +58,6 @@ end
 
 def busted?(hand)
   calculate_hand_value(hand) > 21
-end
-
-def display_welcome
-  prompt "Welcome to Twenty-One!"
-  prompt "Press enter to begin."
-  gets.chomp
 end
 
 def display_table(dealer, player, status='show')
@@ -129,7 +118,8 @@ def play_again?
   ['y', 'yes'].include?(answer)
 end
 
-display_welcome
+prompt "Welcome to Twenty-One! Press enter to begin."
+gets.chomp
 
 loop do
   deck = new_deck
@@ -145,16 +135,14 @@ loop do
 
   if busted?(player_hand)
     prompt "You busted."
-    display_winner(player_hand, dealer_hand)
   else
     dealer_turn(deck, dealer_hand)
-
     display_table(dealer_hand, player_hand)
     prompt "The dealer busted." if busted?(dealer_hand)
-    display_winner(player_hand, dealer_hand)
   end
+  display_winner(player_hand, dealer_hand)
 
   break unless play_again?
 end
 
-prompt "Thanks for playing!"
+prompt "Thanks for playing Twenty-One!"

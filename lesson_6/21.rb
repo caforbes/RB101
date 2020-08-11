@@ -1,21 +1,14 @@
+FACES = (2..10).to_a.map(&:to_s) + %w(A J Q K)
+SUITS = %w(hearts spades clubs diamonds)
+
 def new_deck
-  faces = (2..10).to_a.map(&:to_s) + %w(A J Q K)
-  suits = %w(hearts spades clubs diamonds)
-
-  faces.product(suits).map { |(face, suit)| "#{face} of #{suit}".upcase }
-end
-
-def deal_to_table(deck, dealer, player)
-  2.times { deal_card(deck, player) }
-  2.times { deal_card(deck, dealer) }
+  deck = FACES.product(SUITS).map { |(face, suit)| "#{face} of #{suit}".upcase }
+  deck.shuffle
 end
 
 def deal_card(deck, hand)
-  random_card = deck.sample
-
+  random_card = deck.pop
   hand[random_card] = calculate_card_value(random_card, hand)
-  deck.delete(random_card)
-  # add it to the hand along with card value
 end
 
 def calculate_card_value(card, hand)
@@ -59,10 +52,9 @@ end
 
 def dealer_turn(deck, hand)
   draw_count = 0
-  loop do
+  until calculate_hand_value(hand) >= 17 || busted?(hand)
     deal_card(deck, hand)
     draw_count += 1
-    break if calculate_hand_value(hand) >= 17 || busted?(hand)
   end
   prompt "The dealer drew #{draw_count} cards."
   prompt "Press enter to determine the winner."
@@ -116,14 +108,14 @@ def calculate_winner(player, dealer)
   end
 end
 
-def display_winner(winner)
-  case winner
+def display_winner(player, dealer)
+  case calculate_winner(player, dealer)
   when 'Player'
     prompt "You won!!"
   when 'Dealer'
     prompt "The dealer won!"
   else
-    prompt "There is no winner of this game."
+    prompt "It was a tie."
   end
 end
 
@@ -131,33 +123,38 @@ def prompt(msg)
   puts ">> #{msg}"
 end
 
+def play_again?
+  prompt "Play again? (Enter y to shuffle and restart)"
+  answer = gets.chomp.downcase
+  ['y', 'yes'].include?(answer)
+end
+
 display_welcome
 
 loop do
   deck = new_deck
-
   player_hand = {}
   dealer_hand = {}
 
-  deal_to_table(deck, player_hand, dealer_hand)
+  2.times { deal_card(deck, player_hand) }
+  2.times { deal_card(deck, dealer_hand) }
 
   display_table(dealer_hand, player_hand, 'hide')
 
   player_turn(deck, player_hand)
+
   if busted?(player_hand)
-    prompt "You busted. Press enter to end your turn."
-    gets.chomp
+    prompt "You busted."
+    display_winner(player_hand, dealer_hand)
   else
     dealer_turn(deck, dealer_hand)
+
+    display_table(dealer_hand, player_hand)
+    prompt "The dealer busted." if busted?(dealer_hand)
+    display_winner(player_hand, dealer_hand)
   end
 
-
-  display_table(dealer_hand, player_hand)
-
-  prompt "The dealer busted." if busted?(dealer_hand)
-  display_winner(calculate_winner(player_hand, dealer_hand))
-
-  prompt "Play again? (y to shuffle and restart)"
-  restart = gets.chomp.downcase
-  break unless ['y', 'yes'].include?(restart)
+  break unless play_again?
 end
+
+prompt "Thanks for playing!"

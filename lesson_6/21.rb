@@ -4,6 +4,8 @@ SUITS = %w(hearts spades clubs diamonds)
 WIN = 21
 DEALER_HALT = 17
 
+ROUNDS_TO_VICTORY = 5
+
 def new_deck
   deck = FACES.product(SUITS).map { |(face, suit)| "#{face} of #{suit}".upcase }
   deck.shuffle
@@ -38,7 +40,7 @@ def player_turn(deck, hand)
       case choice
       when '1', 'hit'
         deal_card(deck, hand)
-        display_hand(hand, 'Player')
+        display_hand(hand, :player)
         break
       when '2', 'stay' then return :stay
       else prompt "That's not a valid answer."
@@ -65,23 +67,23 @@ end
 
 def display_table(dealer, player, status='show')
   system 'cls'
-  display_hand(player, 'Player')
+  display_hand(player, :player)
   prompt ""
   case status
   when 'hide'
     dealer_card = dealer.first
     prompt "The dealer is showing a #{dealer_card[0]} [#{dealer_card[1]}+ pts]."
   else
-    display_hand(dealer, 'Dealer')
+    display_hand(dealer, :dealer)
   end
   prompt ""
 end
 
 def display_hand(hand, name)
   case name
-  when 'Player'
+  when :player
     prompt "You have this hand [#{calculate_hand_value(hand)} pts]:"
-  when 'Dealer'
+  when :dealer
     prompt "The dealer has this hand [#{calculate_hand_value(hand)} pts]:"
   end
   hand.each_pair do |card, value|
@@ -93,18 +95,28 @@ def calculate_winner(player, dealer)
   player_pts = calculate_hand_value(player)
   dealer_pts = calculate_hand_value(dealer)
 
-  if busted?(player) then 'Dealer'
-  elsif busted?(dealer) then 'Player'
-  elsif player_pts > dealer_pts then 'Player'
-  elsif dealer_pts > player_pts then 'Dealer'
+  if busted?(player) then :dealer
+  elsif busted?(dealer) then :player
+  elsif player_pts > dealer_pts then :player
+  elsif dealer_pts > player_pts then :dealer
   end
+end
+
+def reset_scores
+  { player: 0, dealer: 0 }
+end
+
+def update_scores(scores, player, dealer)
+  winner = calculate_winner(player, dealer)
+  scores[winner] += 1 if winner
+  scores
 end
 
 def display_winner(player, dealer)
   case calculate_winner(player, dealer)
-  when 'Player'
+  when :player
     prompt "You won!!"
-  when 'Dealer'
+  when :dealer
     prompt "The dealer won!"
   else
     prompt "It was a tie."
@@ -116,13 +128,15 @@ def prompt(msg)
 end
 
 def play_again?
-  prompt "Play again? (Enter y to shuffle and restart)"
+
   answer = gets.chomp.downcase
   ['y', 'yes'].include?(answer)
 end
 
 prompt "Welcome to Twenty-One! Press enter to begin."
 gets.chomp
+
+scores = reset_scores
 
 loop do
   deck = new_deck
@@ -135,16 +149,27 @@ loop do
   display_table(dealer_hand, player_hand, 'hide')
 
   player_turn(deck, player_hand)
-
   if busted?(player_hand)
     prompt "You busted."
   else
+    prompt "You chose to stay."
     dealer_turn(deck, dealer_hand)
     display_table(dealer_hand, player_hand)
     prompt "The dealer busted." if busted?(dealer_hand)
   end
-  display_winner(player_hand, dealer_hand)
 
+  display_winner(player_hand, dealer_hand)
+  scores = update_scores(scores, player_hand, dealer_hand)
+
+  if scores.has_value?(5)
+    # display final winner
+    # choose to play again?
+    # if so reset scores
+  else
+    # keep going with games
+  end
+
+  prompt "Ready for the next round? (enter to continue; q to quit)"
   break unless play_again?
 end
 

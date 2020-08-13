@@ -1,7 +1,7 @@
 FACES = (2..10).to_a.map(&:to_s) + %w(A J Q K)
 SUITS = %w(hearts spades clubs diamonds)
 
-WIN = 21
+WIN_THRESHOLD = 21
 DEALER_HALT = 17
 
 ROUNDS_TO_VICTORY = 5
@@ -14,20 +14,6 @@ end
 def deal_card(deck, hand)
   random_card = deck.pop
   hand[random_card] = calculate_card_value(random_card, hand)
-end
-
-def deal_to_table(deck, dealer, player)
-  system 'cls'
-
-  prompt "Dealing to player..."
-  sleep 1
-  prompt "Dealing to dealer..."
-  sleep 1
-
-  2.times do
-    deal_card(deck, player)
-    deal_card(deck, dealer)
-  end
 end
 
 def calculate_card_value(card, hand)
@@ -43,6 +29,20 @@ end
 
 def calculate_hand_value(hand)
   hand.values.sum
+end
+
+def deal_to_table(deck, dealer, player)
+  system 'cls'
+
+  prompt "Dealing to player..."
+  sleep 1
+  prompt "Dealing to dealer..."
+  sleep 1
+
+  2.times do
+    deal_card(deck, player)
+    deal_card(deck, dealer)
+  end
 end
 
 def player_turn(deck, hand)
@@ -75,11 +75,21 @@ def dealer_turn(deck, hand)
   gets.chomp
 end
 
-def busted?(hand)
-  calculate_hand_value(hand) > WIN
+def play_game_round(deck, player, dealer)
+  player_turn(deck, player)
+  if busted?(player)
+    prompt "You busted."
+  else
+    prompt "You chose to stay."
+
+    dealer_turn(deck, dealer)
+
+    display_table(dealer, player)
+    prompt "The dealer busted." if busted?(dealer)
+  end
 end
 
-def display_table(dealer, player, status='show')
+def display_table(dealer, player, status='show') # 'show', 'hide'
   system 'cls'
   display_hand(player, :player)
   prompt ""
@@ -105,6 +115,10 @@ def display_hand(hand, name)
   end
 end
 
+def busted?(hand)
+  calculate_hand_value(hand) > WIN_THRESHOLD
+end
+
 def calculate_winner(player, dealer)
   player_pts = calculate_hand_value(player)
   dealer_pts = calculate_hand_value(dealer)
@@ -127,10 +141,6 @@ def display_winner(player, dealer)
   end
 end
 
-def reset_scores
-  { player: 0, dealer: 0 }
-end
-
 def update_scores(scores, player, dealer)
   winner = calculate_winner(player, dealer)
   scores[winner] += 1 if winner
@@ -148,10 +158,8 @@ def display_scores(scores)
 end
 
 def calculate_final_winner(scores)
-  if scores[:player] == ROUNDS_TO_VICTORY
-    :player
-  elsif scores[:dealer] == ROUNDS_TO_VICTORY
-    :dealer
+  if scores[:player] == ROUNDS_TO_VICTORY then :player
+  elsif scores[:dealer] == ROUNDS_TO_VICTORY then :dealer
   end
 end
 
@@ -161,7 +169,7 @@ def display_final_winner(scores)
     prompt "CONGRATULATIONS!!!! YOU ARE THE GAME WINNER!!!!"
   when :dealer
     prompt "You lost this match to the dealer. Good game."
-  else prompt "This #{ROUNDS_TO_VICTORY}-game match had no winner."
+  else prompt "This #{ROUNDS_TO_VICTORY}-game match ended early."
   end
 end
 
@@ -169,8 +177,7 @@ def prompt(msg)
   puts ">> #{msg}"
 end
 
-def welcome
-  prompt "Welcome to Twenty-One!"
+def user_get_ready
   prompt "The first to win #{ROUNDS_TO_VICTORY} games takes the match."
   prompt "Press enter to begin."
   gets.chomp
@@ -182,7 +189,6 @@ def play_again?(simple_continue = false)
   if simple_continue
     prompt "Enter anything to continue to the next round (q to quit)."
     answer = gets.chomp.downcase
-    return false if ['q', 'quit'].include?(answer)
   else
     possible_answers = ['y', 'yes', 'n', 'no', 'q', 'quit']
     loop do
@@ -192,12 +198,16 @@ def play_again?(simple_continue = false)
       prompt "I don't understand that response. Try entering 'yes' or 'no'."
     end
   end
+
+  return false if ['q', 'quit'].include?(answer)
   simple_continue || answer.start_with?('y') ? true : false
 end
 
-loop do # main game, requires certain # of victories
-  welcome
-  scores = reset_scores
+prompt "Welcome to Twenty-One!"
+
+loop do # main game loop
+  user_get_ready
+  scores = { player: 0, dealer: 0 }
 
   loop do # single round of 21
     deck = new_deck
@@ -205,18 +215,9 @@ loop do # main game, requires certain # of victories
     dealer_hand = {}
 
     deal_to_table(deck, dealer_hand, player_hand)
-
     display_table(dealer_hand, player_hand, 'hide')
 
-    player_turn(deck, player_hand)
-    if busted?(player_hand)
-      prompt "You busted."
-    else
-      prompt "You chose to stay."
-      dealer_turn(deck, dealer_hand)
-      display_table(dealer_hand, player_hand)
-      prompt "The dealer busted." if busted?(dealer_hand)
-    end
+    play_game_round(deck, player_hand, dealer_hand)
 
     display_winner(player_hand, dealer_hand)
 

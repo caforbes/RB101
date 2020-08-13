@@ -16,6 +16,20 @@ def deal_card(deck, hand)
   hand[random_card] = calculate_card_value(random_card, hand)
 end
 
+def deal_to_table(deck, dealer, player)
+  system 'cls'
+
+  prompt "Dealing to player..."
+  sleep 1
+  prompt "Dealing to dealer..."
+  sleep 1
+
+  2.times do
+    deal_card(deck, player)
+    deal_card(deck, dealer)
+  end
+end
+
 def calculate_card_value(card, hand)
   face = card.split[0]
 
@@ -102,6 +116,17 @@ def calculate_winner(player, dealer)
   end
 end
 
+def display_winner(player, dealer)
+  case calculate_winner(player, dealer)
+  when :player
+    prompt "You won this round!!"
+  when :dealer
+    prompt "The dealer won this round!"
+  else
+    prompt "This round was a tie."
+  end
+end
+
 def reset_scores
   { player: 0, dealer: 0 }
 end
@@ -112,14 +137,31 @@ def update_scores(scores, player, dealer)
   scores
 end
 
-def display_winner(player, dealer)
-  case calculate_winner(player, dealer)
+def display_scores(scores)
+  message = []
+  scores.each do |player, score|
+    message.push "#{player.to_s.upcase} = #{score}"
+  end
+  prompt ''
+  prompt message.join(' | ')
+  prompt ''
+end
+
+def calculate_final_winner(scores)
+  if scores[:player] == ROUNDS_TO_VICTORY
+    :player
+  elsif scores[:dealer] == ROUNDS_TO_VICTORY
+    :dealer
+  end
+end
+
+def display_final_winner(scores)
+  case calculate_final_winner(scores)
   when :player
-    prompt "You won!!"
+    prompt "CONGRATULATIONS!!!! YOU ARE THE GAME WINNER!!!!"
   when :dealer
-    prompt "The dealer won!"
-  else
-    prompt "It was a tie."
+    prompt "You lost this match to the dealer. Good game."
+  else prompt "This #{ROUNDS_TO_VICTORY}-game match had no winner."
   end
 end
 
@@ -127,49 +169,67 @@ def prompt(msg)
   puts ">> #{msg}"
 end
 
-def play_again?
+def welcome
+  prompt "Welcome to Twenty-One!"
 
-  answer = gets.chomp.downcase
-  ['y', 'yes'].include?(answer)
+
+  prompt "Press enter to begin."
+  gets.chomp
 end
 
-prompt "Welcome to Twenty-One! Press enter to begin."
-gets.chomp
+def play_again?(simple_continue = false)
+  answer = ''
 
-scores = reset_scores
-
-loop do
-  deck = new_deck
-  player_hand = {}
-  dealer_hand = {}
-
-  2.times { deal_card(deck, player_hand) }
-  2.times { deal_card(deck, dealer_hand) }
-
-  display_table(dealer_hand, player_hand, 'hide')
-
-  player_turn(deck, player_hand)
-  if busted?(player_hand)
-    prompt "You busted."
+  if simple_continue
+    prompt "Enter anything to continue to the next round (q to quit)."
+    answer = gets.chomp.downcase
+    return false if ['q', 'quit'].include?(answer)
   else
-    prompt "You chose to stay."
-    dealer_turn(deck, dealer_hand)
-    display_table(dealer_hand, player_hand)
-    prompt "The dealer busted." if busted?(dealer_hand)
+    possible_answers = ['y', 'yes', 'n', 'no', 'q', 'quit']
+    loop do
+      prompt "Shuffle and play again? (y/n)"
+      answer = gets.chomp.downcase
+      break if possible_answers.include?(answer)
+      prompt "I don't understand that response. Try entering 'yes' or 'no'."
+    end
+  end
+  simple_continue || answer.start_with?('y') ? true : false
+end
+
+loop do # main game, requires certain # of victories
+  welcome
+  scores = reset_scores
+
+  loop do # single round of 21
+    deck = new_deck
+    player_hand = {}
+    dealer_hand = {}
+
+    deal_to_table(deck, dealer_hand, player_hand)
+
+    display_table(dealer_hand, player_hand, 'hide')
+
+    player_turn(deck, player_hand)
+    if busted?(player_hand)
+      prompt "You busted."
+    else
+      prompt "You chose to stay."
+      dealer_turn(deck, dealer_hand)
+      display_table(dealer_hand, player_hand)
+      prompt "The dealer busted." if busted?(dealer_hand)
+    end
+
+    display_winner(player_hand, dealer_hand)
+
+    scores = update_scores(scores, player_hand, dealer_hand)
+    display_scores(scores)
+
+    break if scores.has_value?(ROUNDS_TO_VICTORY)
+    break unless play_again?(true)
   end
 
-  display_winner(player_hand, dealer_hand)
-  scores = update_scores(scores, player_hand, dealer_hand)
+  display_final_winner(scores)
 
-  if scores.has_value?(5)
-    # display final winner
-    # choose to play again?
-    # if so reset scores
-  else
-    # keep going with games
-  end
-
-  prompt "Ready for the next round? (enter to continue; q to quit)"
   break unless play_again?
 end
 

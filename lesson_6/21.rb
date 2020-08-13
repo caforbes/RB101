@@ -171,8 +171,7 @@ end
 
 def welcome
   prompt "Welcome to Twenty-One!"
-
-
+  prompt "The first to win #{ROUNDS_TO_VICTORY} games takes the match."
   prompt "Press enter to begin."
   gets.chomp
 end
@@ -224,7 +223,7 @@ loop do # main game, requires certain # of victories
     scores = update_scores(scores, player_hand, dealer_hand)
     display_scores(scores)
 
-    break if scores.has_value?(ROUNDS_TO_VICTORY)
+    break if scores.value?(ROUNDS_TO_VICTORY)
     break unless play_again?(true)
   end
 

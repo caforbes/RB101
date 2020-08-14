@@ -47,30 +47,38 @@ end
 
 def player_turn(deck, hand)
   loop do
-    loop do
-      prompt "Do you want to (1) hit or (2) stay?"
-      choice = gets.chomp.downcase
-
-      case choice
-      when '1', 'hit'
-        deal_card(deck, hand)
-        display_hand(hand, :player)
-        break
-      when '2', 'stay' then return :stay
-      else prompt "That's not a valid answer."
-      end
+    case hit_or_stay
+    when :hit
+      deal_card(deck, hand)
+      display_hand(hand, :player)
+    else break
     end
     break if busted?(hand)
   end
 end
 
+def hit_or_stay
+  loop do
+    prompt "Do you want to (1) hit or (2) stay?"
+    choice = gets.chomp.downcase
+
+    case choice
+    when '1', 'hit' then return :hit
+    when '2', 'stay' then return :stay
+    else prompt "That's not a valid answer."
+    end
+  end
+end
+
 def dealer_turn(deck, hand)
-  draw_count = 0
   until calculate_hand_value(hand) >= DEALER_HALT || busted?(hand)
     deal_card(deck, hand)
-    draw_count += 1
   end
-  prompt "The dealer drew #{draw_count} cards."
+  confirm_dealer_turn(hand)
+end
+
+def confirm_dealer_turn(hand)
+  prompt "The dealer drew #{hand.size - 2} cards."
   prompt "Press enter to determine the winner."
   gets.chomp
 end
@@ -200,7 +208,7 @@ def play_again?(simple_continue = false)
   end
 
   return false if ['q', 'quit'].include?(answer)
-  simple_continue || answer.start_with?('y') ? true : false
+  simple_continue || answer.start_with?('y')
 end
 
 prompt "Welcome to Twenty-One!"
@@ -231,6 +239,7 @@ loop do # main game loop
   display_final_winner(scores)
 
   break unless play_again?
+  system 'cls'
 end
 
 prompt "Thanks for playing Twenty-One!"

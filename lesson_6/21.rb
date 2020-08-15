@@ -7,17 +7,21 @@ DEALER_HALT = 17
 ROUNDS_TO_VICTORY = 5
 
 def new_deck
-  deck = FACES.product(SUITS).map { |(face, suit)| "#{face} of #{suit}".upcase }
+  deck = FACES.product(SUITS)
+  deck.map! do |face, suit|
+    { face: face, suit: suit }
+  end
   deck.shuffle
 end
 
 def deal_card(deck, hand)
-  random_card = deck.pop
-  hand[random_card] = calculate_card_value(random_card, hand)
+  drawn_card = deck.pop
+  drawn_card[:points] = calculate_card_value(drawn_card, hand)
+  hand.push(drawn_card)
 end
 
 def calculate_card_value(card, hand)
-  face = card.split[0]
+  face = card[:face]
 
   case face
   when 'K', 'Q', 'J' then 10
@@ -28,7 +32,9 @@ def calculate_card_value(card, hand)
 end
 
 def calculate_hand_value(hand)
-  hand.values.sum
+  hand.reduce(0) do |point_sum, card|
+    point_sum + card[:points]
+  end
 end
 
 def deal_to_table(deck, dealer, player)
@@ -97,6 +103,10 @@ def play_game_round(deck, player, dealer)
   end
 end
 
+def card_name(card)
+  "#{card[:face]} of #{card[:suit]}".upcase
+end
+
 def display_table(dealer, player, status='show') # 'show', 'hide'
   system 'cls'
   display_hand(player, :player)
@@ -104,7 +114,8 @@ def display_table(dealer, player, status='show') # 'show', 'hide'
   case status
   when 'hide'
     dealer_card = dealer.first
-    prompt "The dealer is showing a #{dealer_card[0]} [#{dealer_card[1]}+ pts]."
+    points = dealer_card[:points]
+    prompt "The dealer is showing a #{card_name(dealer_card)} [#{points}+ pts]."
   else
     display_hand(dealer, :dealer)
   end
@@ -118,8 +129,8 @@ def display_hand(hand, name)
   when :dealer
     prompt "The dealer has this hand [#{calculate_hand_value(hand)} pts]:"
   end
-  hand.each_pair do |card, value|
-    puts "   - #{card} (#{value})"
+  hand.each do |card|
+    puts "   - #{card_name(card)} (#{card[:points]})"
   end
 end
 
@@ -177,7 +188,7 @@ def display_final_winner(scores)
     prompt "CONGRATULATIONS!!!! YOU ARE THE GAME WINNER!!!!"
   when :dealer
     prompt "You lost this match to the dealer. Good game."
-  else prompt "This #{ROUNDS_TO_VICTORY}-game match ended early."
+  else prompt "This first-to-#{ROUNDS_TO_VICTORY} match ended early."
   end
 end
 
@@ -219,8 +230,8 @@ loop do # main game loop
 
   loop do # single round of 21
     deck = new_deck
-    player_hand = {}
-    dealer_hand = {}
+    player_hand = []
+    dealer_hand = []
 
     deal_to_table(deck, dealer_hand, player_hand)
     display_table(dealer_hand, player_hand, 'hide')

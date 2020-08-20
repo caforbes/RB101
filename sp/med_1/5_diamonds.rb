@@ -1,26 +1,28 @@
-def diamond(grid)
-  num_stars = grid
+def diamond(size, hollow=false)
+  num_stars = size
   num_spaces = 0
 
-  diamond = [ make_line(num_spaces, num_stars) ]
+  diamond = [ make_line(num_spaces, num_stars, hollow) ]
 
-  loop do
+  while num_stars > 1 do
     num_stars -= 2
     num_spaces += 1
-    break if num_stars < 1
 
-    line = make_line(num_spaces, num_stars)
-
-    diamond.unshift(line)
-    diamond.push(line)
+    line = make_line(num_spaces, num_stars, hollow)
+    diamond.unshift(line).push(line)
   end
 
   puts diamond
 end
 
-def make_line(spaces, stars)
-  space_str = ' ' * spaces
-  star_str = '*' * stars
+def make_line(leading_spaces, stars, hollow=false)
+  space_str = ' ' * leading_spaces
+
+  if hollow && stars > 2
+    star_str = '*' + (' ' * (stars - 2)) + '*'
+  else
+    star_str = '*' * stars
+  end
 
   space_str + star_str
 end
@@ -28,6 +30,7 @@ end
 diamond(1)
 diamond(3)
 diamond(9)
+diamond(9, true)
 
 =begin
 PROBLEM:

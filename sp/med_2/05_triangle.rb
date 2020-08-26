@@ -3,19 +3,23 @@ def triangle(side_a, side_b, side_c)
 
   return :invalid unless triangle?(sides)
 
-  if sides.count(sides[0]) == 3 then :equilateral
-  elsif sides.count(sides[0]) == 2 then :isosceles
-  elsif sides.count(sides[1]) == 2 then :isosceles
-  else :scalene
+  # if sides.count(sides[0]) == 3 then :equilateral
+  # elsif sides.count(sides[0]) == 2 then :isosceles
+  # elsif sides.count(sides[1]) == 2 then :isosceles
+  # else :scalene
+  # end
+  case sides.uniq.size
+  when 1 then :equilateral
+  when 2 then :isosceles
+  when 3 then :scalene
   end
 end
 
 def triangle?(arr_of_sides)
-  return false unless arr_of_sides.size == 3
+  # arr_of_sides = arr_of_sides.sort # optional here but otherwise important
+  # return false unless arr_of_sides.size == 3
   return false unless arr_of_sides.all? { |side| side > 0 }
-
-  arr_of_sides = arr_of_sides.sort # optional here but otherwise important
-  arr_of_sides[0..1].sum >= arr_of_sides[2]
+  arr_of_sides[0..1].sum > arr_of_sides[2]
 end
 
 =begin

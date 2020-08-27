@@ -1,9 +1,9 @@
 a = 4
+b = 2
 
-loop do
+2.times do |a|
   a = 5
-  b = 3
-  break
+  puts a
 end
 
 puts a

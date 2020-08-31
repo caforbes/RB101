@@ -67,6 +67,7 @@ p find_lucky([5]) == -1
 p find_lucky([7, 7, 7, 7, 7, 7, 7]) == 7
 
 
+puts "====="
 
 =begin
 You are given coins of different denominations and a total amount of money amount. Write a function to compute the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
@@ -106,9 +107,29 @@ ALGOR:
   - until remainder = 0
 
 - return result (num of coins)
+
+ALGO 2:
+  initialize list of results
+  save input amount as (target)
+  start value: (saved change)
+
+  filter coins to those equal/smaller than target
+  break if there are none
+  split coins into those that divide evenly into target: is remainder 0?
+  for evenly dividing coins
+    get coins used to divide + saved coins
+    save in list of results
+  for coins that don't divide evenly, find the best intermediate coin
+    divide each coin into target
+    pick the one with the smallest num of coins used
+    save the coins used to a running tally (saved coins)
+    save the remainder as next target
+  repeat unless there was no intermediate coin
+  return the smallest result in the list
+  if there are no results, return -1
 =end
 
-def coin_change(amount, coins)
+def coin_change_1(amount, coins)
   result = 0
   target = amount
 
@@ -123,10 +144,38 @@ def coin_change(amount, coins)
   result
 end
 
+def coin_change(amount, coins)
+  results = []
+
+  temp_target = amount
+  saved_coins = 0
+
+  loop do
+    possible_coins = coins.select{ |coin| coin <= temp_target }
+    break if possible_coins.empty?
+
+    exact_change, extra_coins = possible_coins.partition do |coin|
+      temp_target % coin == 0
+    end
+
+    results += exact_change.map { |coin| saved_coins + (temp_target / coin) }
+
+    next_best = extra_coins.map { |coin| temp_target.divmod(coin) }.sort[0]
+    if next_best
+      saved_coins += next_best[0]
+      temp_target = next_best[1]
+    else break
+    end
+  end
+
+  results.empty? ? -1 : results.sort[0]
+end
+
 p coin_change(11, [1, 2, 5]) == 3
 p coin_change(10, [2]) == 5
 p coin_change(9, [5, 2, 1]) == 3
 p coin_change(33, [10, 2, 1, 3]) == 4
+p coin_change(32, [10, 2, 1, 3]) == 4
 p coin_change(3, [2]) == -1
-
-p coin_change(34, [10, 2, 3]) == 5
+p coin_change(3, [5]) == -1
+p coin_change(4, [2, 3]) == 2 # requires multiple options to be evaluated

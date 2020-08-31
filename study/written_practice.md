@@ -6,7 +6,7 @@ This demonstrates variable scope within the context of a block. Variables initia
 
 
 
-This will first output `4`, but then result in an error about `b` being an undefined variable/method.
+This will first output `4`, but then result in a NameError about `b` being an undefined variable/method.
 
 The local variable `a` is initialized on line 1 and set to the value `4`. Then the `loop` method is invoked and passed a block from lines 3-7. Within the inner scope of the block, the variable `a` is reassigned to the value `5`, and the variable `b` is initialized and set to the value `3`. After returning to the outer scope, the `puts` method is called twice and passed the values referenced by `a` and `b` as arguments. `a` was initialized in the outer scope and its new value `5` can be printed, but `b` was not initialized in the outer scope and so it is undefined here.
 

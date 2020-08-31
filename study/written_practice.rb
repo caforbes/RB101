@@ -1,10 +1,6 @@
-a = 4
-b = 2
+require 'pry'
 
-2.times do |a|
-  a = 5
-  puts a
-end
-
-puts a
-puts b
+a = 5
+b = 5
+c = 5
+binding.pry

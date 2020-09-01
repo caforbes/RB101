@@ -117,7 +117,7 @@ ALGO 2:
   break if there are none
   split coins into those that divide evenly into target: is remainder 0?
   for evenly dividing coins
-    get coins used to divide + saved coins
+    get number of coins dividing (+ any previously saved coins)
     save in list of results
   for coins that don't divide evenly, find the best intermediate coin
     divide each coin into target

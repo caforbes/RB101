@@ -1,0 +1,2 @@
+The %{adjective} %{adjective} %{noun} %{verb_pres} over the %{adjective} %{noun} as it %{adverb} %{verb_pres} its %{noun}.
+Meanwhile, the %{noun} %{verb_pres}.

@@ -167,3 +167,157 @@ common_prefix(%w(dog racecar car)) == ''
 common_prefix(%w(interspecies interstellar interstate)) == 'inters'
 common_prefix(%w(throne dungeon)) == ''
 common_prefix(%w(throne)) == 'throne'
+
+
+=begin
+PROBLEM:
+  INPUT: 2 Strings
+  OUTPUT: Boolean
+  RULES? (explicit/implicit)
+    - true if the first string has a substring that the second string also has
+    - false if no substring occurs in both strings
+    - substring must be at least two characters
+    - input strings may be empty
+    - if input string is empty, there are no possible 2+ char substrings -> false
+    - case of the strings is irrelevant -- need not be the same case to return true
+    - order of the strings is irrelevant
+  QUESTIONS: (input types? new/old object? empty input?)
+    ??
+
+DATA STRUCTURES:
+  Strings -> Arrays of substrings -> Boolean
+
+ALGORITHM (review the hardest example out loud):
+  *** substrings method
+  create an empty array for results
+  if either input string is less than two characters, return empty array
+  iterate over range from 0 to 2 less than string length
+    use this number as starting index of a slice
+    iterate over range from 2 to length of string - index
+      use this number as length of the slice
+      get a slice with starting index and length from the input string
+      add the slice to results array
+  return unique values in the results array
+
+  smallest = 0, 2, or length-2, 2
+  largest = 0, length of string
+
+  *** main method
+  find all the substrings in the first input string, lowercased
+  find all the substrings in the second input string, lowercased
+  see if any substring from string1 is found in string2 substrings -> boolean
+
+  alternate strategy from video
+    - iterate through characters of string 1, lowercased
+    - iterate through characters of string 2, lowercased
+    - for each, reference the index
+    - for each, break iteration if index reaches final index
+    - if the current character from both strings matches, and neither is the last char:
+    - compare the following char in each string using index + 1
+    - return true if that also matches
+    - else return false
+
+CODE!
+=end
+
+def substring_test(string1, string2)
+  # substrings1 = substrings(string1.downcase)
+  # substrings2 = substrings(string2.downcase)
+
+  # substrings1.any? { |substring| substrings2.include?(substring) }
+
+
+  chars1 = string1.downcase.chars
+  chars2 = string2.downcase.chars
+
+  chars1.each_with_index do |char1, index1|
+    break if index1 == chars1.length - 1
+
+    chars2.each_with_index do |char2, index2|
+      break if index2 == chars2.length - 1
+      if char1 == char2
+        return true if chars1[index1 + 1] == chars2[index2 + 1]
+      end
+    end
+  end
+  false
+end
+
+def substrings(string)
+  results = []
+  return results if string.length < 2
+
+  (0...string.length-1).each do |start_ind|
+    (2..string.length - start_ind).each do |length|
+      results << string[start_ind, length]
+    end
+  end
+
+  results.uniq
+end
+
+# p substrings('h') == []
+# p substrings('hi') == ['hi']
+# p substrings('aaaa') == ['aa', 'aaa', 'aaaa']
+# p substrings('hello') == ['he', 'hel', 'hell', 'hello',
+#                           'el', 'ell', 'ello',
+#                           'll', 'llo',
+#                           'lo'
+#                           ]
+
+p substring_test('Something', 'Fun') == false
+p substring_test('Something', 'Home') == true
+p substring_test('Something', '') == false
+p substring_test('', 'Something') == false
+p substring_test('BANANA', 'banana') == true
+p substring_test('test', 'lllt') == false
+p substring_test('', '') == false
+p substring_test('1234567', '541265') == true
+p substring_test('supercalifragilisticexpialidocious', 'SoundOfItIsAtrociou') == true
+
+# ~25m
+
+
+=begin
+PROBLEM:
+  INPUT: Strings x2
+  OUTPUT: Boolean
+  RULES? (explicit/implicit)
+    - return true iff str1 can be rearranged to form str2
+    - extra characters are fine
+    - str1 must contain same NUMBER of each char as str2 has to return true
+    - str1 must be at least same length
+    - only lowercase will be input, no need to consider case
+    - only alphabetic characters will be used
+    - asymmetrical: str2 doesn't have to contain str1
+  QUESTIONS: (input types? new/old object? empty input?)
+    - what happens if one string is empty? automatically true??
+
+EXAMPLES (manually check them):
+
+DATA STRUCTURES:
+  Strings -> Array of chars -> Boolean
+
+ALGORITHM (review the hardest example out loud):
+  - create an array of all the unique characters in string 2
+  - iterate through the unique characters
+  - for each character, check that the count of that char in string 1
+    is greater/equal to count in string 2
+  - return true if all characters pass, else false
+
+CODE!
+=end
+
+def scramble?(string, target)
+  target_chars = target.chars.uniq
+  target_chars.all? { |char| string.count(char) >= target.count(char) }
+end
+
+p scramble?('javasss', 'jjss') == false
+p scramble?('worldxxx', 'world') == true
+p scramble?('cedewaraaossoqqyt', 'codewars') == true
+p scramble?('katas', 'steak') == false
+p scramble?('scriptjava', 'javascript') == true
+p scramble?('scriptingjava', 'javascript') == true
+
+# ~10m

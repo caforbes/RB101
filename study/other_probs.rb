@@ -265,15 +265,15 @@ end
 #                           'lo'
 #                           ]
 
-p substring_test('Something', 'Fun') == false
-p substring_test('Something', 'Home') == true
-p substring_test('Something', '') == false
-p substring_test('', 'Something') == false
-p substring_test('BANANA', 'banana') == true
-p substring_test('test', 'lllt') == false
-p substring_test('', '') == false
-p substring_test('1234567', '541265') == true
-p substring_test('supercalifragilisticexpialidocious', 'SoundOfItIsAtrociou') == true
+substring_test('Something', 'Fun') == false
+substring_test('Something', 'Home') == true
+substring_test('Something', '') == false
+substring_test('', 'Something') == false
+substring_test('BANANA', 'banana') == true
+substring_test('test', 'lllt') == false
+substring_test('', '') == false
+substring_test('1234567', '541265') == true
+substring_test('supercalifragilisticexpialidocious', 'SoundOfItIsAtrociou') == true
 
 # ~25m
 
@@ -313,11 +313,70 @@ def scramble?(string, target)
   target_chars.all? { |char| string.count(char) >= target.count(char) }
 end
 
-p scramble?('javasss', 'jjss') == false
-p scramble?('worldxxx', 'world') == true
-p scramble?('cedewaraaossoqqyt', 'codewars') == true
-p scramble?('katas', 'steak') == false
-p scramble?('scriptjava', 'javascript') == true
-p scramble?('scriptingjava', 'javascript') == true
+scramble?('javasss', 'jjss') == false
+scramble?('worldxxx', 'world') == true
+scramble?('cedewaraaossoqqyt', 'codewars') == true
+scramble?('katas', 'steak') == false
+scramble?('scriptjava', 'javascript') == true
+scramble?('scriptingjava', 'javascript') == true
 
 # ~10m
+
+
+
+=begin
+- if string is empty, return 0
+- split input string into array of substrings (shortest = 1)
+  - create range of 0 - length-1 (starting indices)
+  - for each index, iterate over start - length-1 as ending index
+  - get a slice of string from start to end index
+  - store in results arraay
+  - return unique elements of results array
+- filter array to only palindromes (can be 1)
+  - string == reversed string
+- transform palindrome array to array of lengths
+- return maximum value
+=end
+
+def longest_palindrome(string)
+  return 0 if string.empty?
+  palindromes = substrings(string).select { |substr| palindrome?(substr) }
+  palindromes.map!(&:length)
+  palindromes.max
+end
+
+def substrings(string)
+  results = []
+  (0...string.length).each do |start_ind|
+    (start_ind...string.length).each do |end_ind|
+      results << string[start_ind..end_ind]
+    end
+  end
+  results.uniq
+end
+
+def palindrome?(string)
+  string == string.reverse
+end
+
+# p palindrome?("a") == true
+# p palindrome?("ababa") == true
+# p palindrome?("abb") == false
+
+# p substrings('hi') == ['h', 'hi', 'i']
+# p substrings('aaaa') == ['a', 'aa', 'aaa', 'aaaa']
+# p substrings('hello') == ['h', 'he', 'hel', 'hell', 'hello',
+#                           'e', 'el', 'ell', 'ello',
+#                           'l', 'll', 'llo',
+#                           'lo', 'o'
+#                           ]
+
+p longest_palindrome("") == 0
+p longest_palindrome("a") == 1
+p longest_palindrome("aa") == 2
+p longest_palindrome("baa") == 2
+p longest_palindrome("aab") == 2
+p longest_palindrome("baabcd") == 4
+p longest_palindrome("baablkj12345432133d") == 9
+
+# ~23m

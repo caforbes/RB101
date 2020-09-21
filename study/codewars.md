@@ -191,7 +191,7 @@ Algo:
 ## 8:55
 
 
-# Who likes it?
+# Who likes it? (6kyu)
 
 You probably know the "like" system from Facebook and other pages. People can "like" blog posts, pictures or other items. We want to create the text that should be displayed next to such an item.
 
@@ -231,3 +231,93 @@ Algo:
 - return the probably-interpolated string
 
 ## 9:00
+
+
+# Sherlock pockets (6kyu) -- 2020-09-21
+
+Sherlock has to find suspects on his latest case. He will use your method, dear Watson. Suspect in this case is a person which has something not allowed in his/her pockets.
+
+Allowed items are defined by array of numbers.
+
+Pockets contents are defined by map entries where key is a person and value is one or few things represented by an array of numbers (can be nil or empty array if empty), example:
+
+```
+pockets = { 
+  bob: [1],
+  tom: [2, 5],
+  jane: [7]
+} 
+```
+
+Write method which helps Sherlock to find suspects. If no suspect is found or there are no pockets (`pockets == nil`), the method should return `nil`.
+
+```
+find_suspects(pockets, [1, 2]) # => [:tom, :jane]
+find_suspects(pockets, [1, 7, 5, 2]) # => nil
+find_suspects(pockets, []) # => [:bob, :tom, :jane]
+find_suspects(pockets, [7]) # => [:bob, :tom]
+```
+
+## PEDAC
+
+Prob:
+- I: Hash, Array of integers
+- O: Array of symbols (hash keys), else nil
+- Rules
+	- input hash contains name symbols as keys
+	- input hash has values of array of integers (?)
+	- return all names/keys for which the value array contains an element not in the input array
+	- if all value arrays have only elements in the input array, or if the input hash is empty, return nil
+
+Algo:
+- if hash is empty, return nil
+- create empty suspects array
+- iterate through the pockets hash
+	- if all elements in pocket array (value) are in input array, move to next
+	- if not all elements are in input array, add key/name to suspects array
+- if suspects array is empty, return nil, else return suspects array
+
+## 18:10
+
+
+# Write number in expanded form (6kyu)
+
+You will be given a number and you will need to return it as a string in Expanded Form. For example:
+
+```
+expanded_form(12); # Should return '10 + 2'
+expanded_form(42); # Should return '40 + 2'
+expanded_form(70304); # Should return '70000 + 300 + 4'
+```
+
+NOTE: All numbers will be whole numbers greater than 0.
+
+## PEDAC
+
+Prob:
+- Input: positive integer
+- Output: string
+- return expanded form with all base ten elements in separate slot
+- separated by plus
+- if e.g. tens digit is 0, skip that one (no +0)
+
+Data structures:
+- Integer
+- Array
+- String
+
+Algo:
+- enter a loop
+	- get number modulo placevalue 10
+	- subtract remainder from num and save to an array (in first position)
+	- multiply place value by 10
+	- continue multiplying by 100, 1000, until number is 0
+- join array with " + "
+
+- get digits array of original number in reverse order
+- multiply each digit by 10^index
+- remove all 0 from the array
+- reverse the array
+- join it with ' + '
+
+## 17:45

@@ -122,3 +122,112 @@ Algo
 	- return the results array
 
 ## 17:52
+
+
+# Multiples of 3 or 5 (6kyu) - 2020-09-20
+
+If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+
+Finish the solution so that it returns the sum of all the multiples of 3 or 5 below the number passed in.
+
+Note: If the number is a multiple of both 3 and 5, only count it once. Also, if a number is negative, return 0(for languages that do have them)
+
+```
+test(solution(10), 23)
+test(solution(20), 78)
+test(solution(200), 9168)
+```
+
+## PEDAC
+
+Prob:
+- count all numbers which are multiples of 3 or 5 below the input number
+- does not count the current number (e.g. up to 10, not including)
+- get the sum of all these multiples
+- don't repeat multiples, e.g. don't count 15 twice
+- return 0 if the input number is negative
+
+Data Str
+- range (0...input)
+- Array
+
+Algo
+- create a range from 0 to the input number, convert this to an array
+- filter to only multiples of 3 or 5
+- sum these numbers and return the sum
+
+## 8:30
+
+
+# Break up Camel Case
+
+Complete the solution so that the function will break up camel casing, using a space between words.
+
+```
+solution("camel")  ==  "camel"
+solution("camelCasing")  ==  "camel Casing"
+solution("camelCasingTest")  ==  "camel Casing Test"
+```
+
+## PEDAC
+
+Prob:
+- input will be a string in camel case
+- first letter is lowercase, some subsequent chars are uppercase
+- output should insert a space before the uppercase character
+- return a new string
+
+Data:
+- range to get uppercase chars
+- String -> Array of chars -> String
+
+Algo:
+- define an array/range containing all uppercase characters
+- split string into array of characters
+- transform the array of chars:
+	- if a character is uppercase, prefix a space to it
+- join the transformed characters and return it
+
+## 8:55
+
+
+# Who likes it?
+
+You probably know the "like" system from Facebook and other pages. People can "like" blog posts, pictures or other items. We want to create the text that should be displayed next to such an item.
+
+Implement a function likes :: [String] -> String, which must take in input array, containing the names of people who like an item. It must return the display text as shown in the examples:
+
+```
+likes [] -- must be "no one likes this"
+likes ["Peter"] -- must be "Peter likes this"
+likes ["Jacob", "Alex"] -- must be "Jacob and Alex like this"
+likes ["Max", "John", "Mark"] -- must be "Max, John and Mark like this"
+likes ["Alex", "Jacob", "Mark", "Max"] -- must be "Alex, Jacob and 2 others like this"
+```
+
+For 4 or more names, the number in and 2 others simply increases.
+
+## PEDAC
+
+Prob:
+- input: list of names/strings
+- output: string
+- calculate how to display the list of names, displaying max 3 of them
+- for 0-1 users, use singular "likes"
+- for 2+ users, use plural "like"
+- for 0 users, list name as "no one"
+- for 1 user, list user
+- for 2 users, list users split by "and"
+- for 3 users, list users split by ", " and "and"
+- for 4+ users, list two users split by ", " and number of others remaining
+
+Algo:
+- initialize case statement referencing size of users/names array
+- 0: "no one likes this"
+- 1: "[1] likes this"
+- 2: "[1] and [2] like this"
+- 3: "[1], [2], and [3] like this"
+- 4+: "[1], [2], and [list size -2] like this"
+- return the probably-interpolated string
+
+## 9:00

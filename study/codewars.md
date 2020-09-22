@@ -321,3 +321,85 @@ Algo:
 - join it with ' + '
 
 ## 17:45
+
+
+# Weight for weight (5kyu) - 2020-09-22
+
+It was decided to attribute a "weight" to numbers. The weight of a number will be from now on the sum of its digits.
+
+For example 99 will have "weight" 18, 100 will have "weight" 1 so in the list 100 will come before 99. Given a string with the weights of FFC members in normal order can you give this string ordered by "weights" of these numbers?
+
+`"56 65 74 100 99 68 86 180 90"` ordered by numbers weights becomes: `"100 180 90 56 65 74 68 86 99"`
+
+When two numbers have the same "weight", let us class them as if they were strings (alphabetical ordering) and not numbers: 100 is before 180 because its "weight" (1) is less than the one of 180 (9) and 180 is before 90 since, having the same "weight" (9), it comes before as a string.
+
+All numbers in the list are positive numbers and the list can be empty.
+
+- It may happen that the input string have leading, trailing whitespaces and more than a unique whitespace between two consecutive numbers
+- Don't modify the input
+
+## PEDAC
+
+Prob:
+- I: String
+- O: new String
+- Rules
+	- string is of numbers and whitespace
+	- original numbers are in value order
+	- create a new string with numbers in digit sum order
+	- if two numbers have same digit sum order, further sort by string order
+	- list string can be empty
+
+Data:
+	- Strings
+	- Array of strings
+	- Array of integers/digits
+
+Algo:
+	- split input string by whitespace into string-numbers
+	- sort the array by custom criteria
+		- split string numbers into characters, convert to digits and sum
+		- compare elements by this value
+		- if uneven, sort based on this weight
+		- if equivalent, then sort based on original string alphabetic order
+	- join sorted array of strings with spaces
+	- return string
+
+## 15:07
+
+
+# Simple pig latin (5kyu)
+
+Move the first letter of each word to the end of it, then add "ay" to the end of the word. Leave punctuation marks untouched.
+
+```ruby
+pig_it('Pig latin is cool') # igPay atinlay siay oolcay
+pig_it('Hello world !')     # elloHay orldway !
+```
+
+## PEDAC
+
+Prob:
+- Input: String
+- Output: new String
+- Rules
+	- input words are separated from each other and punctuation by spaces
+	- change all words (not punctuation) to pig latin variant
+	- move first letter to end and add 'ay'
+	- don't change the case of anything, retain it as original case even moved
+	- only move first letter, not clusters etc
+	- we don't even care about vowels/consonants!!
+
+Data:
+	Strings
+	Array of Strings
+
+Algo:
+	- split string into words based on spacing
+	- transform the array of words
+	- if all characters are alphabetical, change to pig latin word
+		- slice of all but first character + first char + 'ay'
+	- else use original word
+	- join the transformed array with spaces, and return
+
+## ~11m

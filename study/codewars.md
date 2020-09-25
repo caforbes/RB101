@@ -121,7 +121,7 @@ Algo
 		- add the string to the results array
 	- return the results array
 
-## 17:52
+~ 17:52
 
 
 # Multiples of 3 or 5 (6kyu) - 2020-09-20
@@ -156,7 +156,7 @@ Algo
 - filter to only multiples of 3 or 5
 - sum these numbers and return the sum
 
-## 8:30
+~ 8:30
 
 
 # Break up Camel Case
@@ -188,7 +188,7 @@ Algo:
 	- if a character is uppercase, prefix a space to it
 - join the transformed characters and return it
 
-## 8:55
+~ 8:55
 
 
 # Who likes it? (6kyu)
@@ -230,7 +230,7 @@ Algo:
 - 4+: "[1], [2], and [list size -2] like this"
 - return the probably-interpolated string
 
-## 9:00
+~ 9:00
 
 
 # Sherlock pockets (6kyu) -- 2020-09-21
@@ -277,7 +277,7 @@ Algo:
 	- if not all elements are in input array, add key/name to suspects array
 - if suspects array is empty, return nil, else return suspects array
 
-## 18:10
+~ 18:10
 
 
 # Write number in expanded form (6kyu)
@@ -320,7 +320,7 @@ Algo:
 - reverse the array
 - join it with ' + '
 
-## 17:45
+~ 17:45
 
 
 # Weight for weight (5kyu) - 2020-09-22
@@ -365,7 +365,7 @@ Algo:
 	- join sorted array of strings with spaces
 	- return string
 
-## 15:07
+~ 15:07
 
 
 # Simple pig latin (5kyu)
@@ -402,4 +402,139 @@ Algo:
 	- else use original word
 	- join the transformed array with spaces, and return
 
-## ~11m
+~ 11m
+
+
+# Kebabize (6kyu) - 2020-09-25
+
+Modify the kebabize function so that it converts a camel case string into a kebab case.
+
+```ruby
+kebabize('camelsHaveThreeHumps') # camels-have-three-humps
+kebabize('camelsHave3Humps') # camels-have-humps
+```
+
+the returned string should only contain lowercase letters
+
+## PEDAC
+
+Prob:
+	- before all uppercase, should be a hyphen
+	- convert all uppercase to lowercase
+	- numbers and non-letters should be removed
+	- return same or new string?
+
+Data:
+	- String -> Array -> String
+	- String ...
+
+Algo:
+- v1 new string
+	- split string into chars and iterate over them
+	- if char is capital, convert to hyphen + lowercase
+	- if char is nonalphabetic, convert to empty string
+	- join and return new string
+- v2 same string
+	- iterate through string
+	- collect a list of non-lowercase characters
+	- for all unique characters in that list
+	 	- if an uppercase letter, sub for hyphen + that letter lowercase
+	 	- if not a letter, delete all instances of that character
+ 	- return the modified string
+
+~ 20m (I did the mutate in place version, which was harder)
+
+
+# Pick peaks (5kyu)
+
+In this kata, you will write a function that returns the positions and the values of the "peaks" (or local maxima) of a numeric array.
+
+For example, the array arr = [0, 1, 2, 5, 1, 0] has a peak at position 3 with a value of 5 (since arr[3] equals 5).
+
+The output will be returned as an object with two properties: pos and peaks. Both of these properties should be arrays. If there is no peak in the given array, then the output should be {pos: [], peaks: []}.
+
+All input arrays will be valid integer arrays (although it could still be empty), so you won't need to validate the input.
+
+The first and last elements of the array will not be considered as peaks (in the context of a mathematical function, we don't know what is after and before and therefore, we don't know if it is a peak or not).
+
+Also, beware of plateaus !!! [1, 2, 2, 2, 1] has a peak while [1, 2, 2, 2, 3] does not. In case of a plateau-peak, please only return the position and value of the beginning of the plateau. For example: pickPeaks([1, 2, 2, 2, 1]) returns {pos: [1], peaks: [2]} (or equivalent in other languages)
+
+## PEDAC
+
+Prob:
+	- input: array of integers
+	- output: hash with keys :pos and :peaks, values array of ints
+	- find local maxima in the array
+	- identify their index and value and add to a hash
+	- start and end values don't count as local maxima
+	- input array with no local maxima returns hash with empty value arrays
+	- plateaus of more than 1 same value: first value is peak if plateau then goes down, not if it then goes up
+
+Ex:
+```ruby
+pickPeaks([]) == {pos: [], peaks: []}
+pickPeaks([0, 1, 2, 5, 1, 0]) == {pos: [3], peaks: [5]}
+pickPeaks([3, 2, 3, 6, 4, 1, 2, 3, 2, 1, 2, 3]) == {pos: [3, 7], peaks: [6, 3]}
+pickPeaks([0, 1, 2, 2, 2, 1]) == {pos: [1], peaks: [2]}
+pickPeaks([0, 1, 2, 2, 2, 3]) == {pos: [], peaks: []}
+pickPeaks([1, 3]) == {pos: [], peaks: []}
+```
+
+Data:
+	- Arrays, Integers, Hash
+	- Candidate: Hash
+
+Algo:
+	- create the peaks hash with :pos and :peaks
+	- iterate through the input array with indexes
+	- if index is 0, skip to next
+	- compare current value to previous value (index -1)
+		- if the current value is an increase from the last value, save it as a candidate
+			- store its value and its index in an array
+		- if the current value is the same as the last value, skip to next
+		- if the current value is less than the last value, and there is a candidate, add the saved candidate to the hash and update candidate to empty
+	- return the hash
+
+~ 36:11
+
+## My Solution
+
+```ruby
+def pick_peaks(arr)
+  peaks = {"pos" => [], "peaks" => []}
+  candidate = nil
+  
+  arr.each_with_index do |num, index|
+    next if index == 0
+    last_val = arr[index-1]
+    
+    if num > last_val
+      candidate = {"pos" => index, "peaks" => num}
+    elsif last_val > num
+      candidate.each { |key, val| peaks[key] << val } if candidate
+      candidate = nil
+    end
+  end
+  peaks
+end
+```
+
+## Refactor
+
+```ruby
+def pick_peaks(arr)
+  peak_indices = []
+  candidate = nil
+  
+  arr[1..-1].each_with_index do |num, index|
+    if num > arr[index-1]
+      candidate = index
+    elsif arr[index-1] > num
+      peak_indices << candidate if candidate
+      candidate = nil
+    end
+  end
+  {"pos" => peak_indices, "peaks" => peak_indices.map { |i| arr[i] }}
+end
+```
+

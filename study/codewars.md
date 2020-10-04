@@ -565,6 +565,17 @@ algo:
     - if char is lowercase, uppercase it
   - join the array with spaces, return it
 
+  - create an array for chunks
+  - add first character to chunk
+  	- set spacing flag to true or false based on char type
+  - iterate through rest of characters
+  	- if current char matches spacing/non-spacing of last char, add to chunk
+  	- if doesn't match
+  		- add chunk to array, then reassign chunk to char
+  		- reset the spacing flag
+  - transform array of chunks to swapcased words
+  - reverse and join with no spacing
+
 ## Attempt
 
 ```ruby
@@ -577,7 +588,32 @@ p transform("Example Input") == "iNPUT eXAMPLE"
 
 ## Refactor: dealt wrongly with multiple spacing
 
-...
+```ruby
+def string_transformer(string)
+  words_and_spaces(string).map(&:swapcase).reverse.join
+end
+
+def words_and_spaces(string)
+  chunks = []
+  current_chunk = ''
+  spacing = space?(string[0])
+  
+  string.chars.each do |char| 
+    if space?(char) == spacing
+      current_chunk << char
+    else
+      chunks << current_chunk
+      current_chunk = char
+      spacing = space?(char)
+    end
+  end
+  chunks << current_chunk
+end
+
+def space?(char)
+  char == ' '
+end
+```
 
 
 # Format a string of names like 'Bart, Lisa & Maggie' (6kyu)
